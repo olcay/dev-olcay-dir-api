@@ -8,6 +8,9 @@ namespace WebApi.Helpers
     public class DataContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<ItemTag> ItemTags { get; set; }
         
         private readonly IConfiguration Configuration;
 
@@ -16,9 +19,15 @@ namespace WebApi.Helpers
             Configuration = configuration;
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ItemTag>().HasKey(it => new { it.ItemId, it.TagId });
+            base.OnModelCreating(modelBuilder);
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            // connect to sqlite database
+            // connect to database
             options.UseNpgsql(GetConnectionString("DATABASE_URL"));
         }
 

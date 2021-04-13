@@ -1,13 +1,12 @@
-using AutoMapper;
+﻿using AutoMapper;
 using WebApi.Entities;
 using WebApi.Models.Accounts;
 
-namespace WebApi.Helpers
+namespace WebApi.Profiles
 {
-    public class AutoMapperProfile : Profile
+    public class AccountsProfile : Profile
     {
-        // mappings between model and entity objects
-        public AutoMapperProfile()
+        public AccountsProfile()
         {
             CreateMap<Account, AccountResponse>();
 
