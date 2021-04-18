@@ -12,10 +12,14 @@ namespace WebApi.Models
         [DataMember]
         public IEnumerable<LinkDto> Links { get; }
 
-        public LinkedCollectionResourceDto(IEnumerable<IDictionary<string, object>> value, IEnumerable<LinkDto> links)
+        [DataMember]
+        public PaginationDto Pagination { get; }
+
+        public LinkedCollectionResourceDto(IEnumerable<IDictionary<string, object>> value, IEnumerable<LinkDto> links, PaginationDto pagination)
         {
             this.Value = value;
             this.Links = links;
+            this.Pagination = pagination;
         }
     }
 }

@@ -57,16 +57,13 @@ namespace WebApi.Controllers
 
             var itemsFromRepo = _itemDirectoryRepository.GetItems(itemsResourceParameters);
                     
-            var paginationMetadata = new
-            {
-                totalCount = itemsFromRepo.TotalCount,
-                pageSize = itemsFromRepo.PageSize,
-                currentPage = itemsFromRepo.CurrentPage,
-                totalPages = itemsFromRepo.TotalPages 
-            };
-
-            Response.Headers.Add("X-Pagination",
-                JsonSerializer.Serialize(paginationMetadata));
+            var paginationMetadata = new PaginationDto
+            (
+                itemsFromRepo.TotalCount,
+                itemsFromRepo.PageSize,
+                itemsFromRepo.CurrentPage,
+                itemsFromRepo.TotalPages 
+            );
 
             var links = CreateLinksForItems(itemsResourceParameters,
                 itemsFromRepo.HasNext,
@@ -83,7 +80,7 @@ namespace WebApi.Controllers
                 return itemAsDictionary;
             });
 
-            var linkedCollectionResource = new LinkedCollectionResourceDto(shapedItemsWithLinks, links);
+            var linkedCollectionResource = new LinkedCollectionResourceDto(shapedItemsWithLinks, links, paginationMetadata);
 
             return Ok(linkedCollectionResource);             
         }
