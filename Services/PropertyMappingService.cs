@@ -15,11 +15,19 @@ namespace WebApi.Services
                { "Description", new PropertyMappingValue(new List<string>() { "Description" }) }
           };
 
+        private Dictionary<string, PropertyMappingValue> _petPropertyMapping =
+           new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
+           {
+               { "PublishDate", new PropertyMappingValue(new List<string>() { "PublishDate" } ) },
+               { "Age", new PropertyMappingValue(new List<string>() { "Age" } )}
+           };
+
         private IList<IPropertyMapping> _propertyMappings = new List<IPropertyMapping>();
 
         public PropertyMappingService()
         {
             _propertyMappings.Add(new PropertyMapping<ItemDto, Entities.Item>(_itemPropertyMapping));
+            _propertyMappings.Add(new PropertyMapping<PetDto, Entities.Pet>(_petPropertyMapping));
         }
 
         public bool ValidMappingExistsFor<TSource, TDestination>(string fields)

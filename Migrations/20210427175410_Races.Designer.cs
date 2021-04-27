@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Helpers;
@@ -9,9 +10,10 @@ using WebApi.Helpers;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20210427175410_Races")]
+    partial class Races
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,28 +190,6 @@ namespace WebApi.Migrations
                     b.HasIndex("RaceId");
 
                     b.ToTable("Pets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("102b566b-ba1f-404c-b2df-e2cde39ade09"),
-                            Age = 1,
-                            CityId = 34,
-                            CreatedById = 1,
-                            CreationDate = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            Description = "Evde anne sütüyle büyüyen oyuncu",
-                            FoundHome = false,
-                            FromWhere = 3,
-                            Gender = 1,
-                            IsDeleted = false,
-                            IsPublished = true,
-                            Name = "Mişa",
-                            PetType = 1,
-                            PublishDate = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            RaceId = 43,
-                            Size = 1,
-                            Title = "Norveç orman melezi bebek"
-                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Race", b =>

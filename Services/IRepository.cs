@@ -8,6 +8,8 @@ namespace WebApi.Services
 {
     public interface IRepository
     {    
+        IEnumerable<Race> GetRaces(int petType);
+
         IEnumerable<Tag> GetTags(Guid itemId);
         ItemTag GetItemTag(Guid itemId, Guid tagId);
         Tag GetTag(string name);
@@ -22,5 +24,7 @@ namespace WebApi.Services
         void UpdateItem(Item item);
         bool ItemExists(Guid itemId);
         bool Save();
+
+        PagedList<Pet> GetPets(PetsResourceParameters resourceParameters);
     }
 }

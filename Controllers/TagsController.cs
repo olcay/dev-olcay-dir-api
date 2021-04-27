@@ -14,20 +14,20 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("api/items/{itemId}/tags")]
-    // [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
+    [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
     [HttpCacheExpiration(CacheLocation = CacheLocation.Public)]
     [HttpCacheValidation(MustRevalidate = true)]
     [Produces("application/json")]
     public class TagsController : ControllerBase
     {
-        private readonly IRepository _itemDirectoryRepository;
+        private readonly IRepository _repository;
         private readonly IMapper _mapper;
 
-        public TagsController(IRepository itemDirectoryRepository,
+        public TagsController(IRepository repository,
             IMapper mapper)
         {
-            _itemDirectoryRepository = itemDirectoryRepository ??
-                throw new ArgumentNullException(nameof(itemDirectoryRepository));
+            _repository = repository ??
+                throw new ArgumentNullException(nameof(repository));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }
@@ -35,12 +35,12 @@ namespace WebApi.Controllers
         [HttpGet(Name = "GetTagsForItem")]
         public ActionResult<IEnumerable<TagDto>> GetTagsForItem(Guid itemId)
         {
-            if (!_itemDirectoryRepository.ItemExists(itemId))
+            if (!_repository.ItemExists(itemId))
             {
                 return NotFound();
             }
 
-            var tagsForItemFromRepo = _itemDirectoryRepository.GetTags(itemId);
+            var tagsForItemFromRepo = _repository.GetTags(itemId);
             return Ok(_mapper.Map<IEnumerable<TagDto>>(tagsForItemFromRepo));
         }
 
@@ -48,17 +48,17 @@ namespace WebApi.Controllers
         public ActionResult<TagDto> CreateTagForItem(
             Guid itemId, TagForCreationDto tag)
         {
-            if (!_itemDirectoryRepository.ItemExists(itemId))
+            if (!_repository.ItemExists(itemId))
             {
                 return NotFound();
             }
 
             var tagEntity = _mapper.Map<Entities.Tag>(tag);
 
-            var tagFromRepo = _itemDirectoryRepository.GetTag(tagEntity.Name);
+            var tagFromRepo = _repository.GetTag(tagEntity.Name);
 
-            _itemDirectoryRepository.AddItemTag(itemId, tagFromRepo.Id);
-            _itemDirectoryRepository.Save();
+            _repository.AddItemTag(itemId, tagFromRepo.Id);
+            _repository.Save();
 
             var tagToReturn = _mapper.Map<TagDto>(tagEntity);
             return CreatedAtRoute("GetTagForItem",
@@ -69,14 +69,14 @@ namespace WebApi.Controllers
         [HttpDelete("{tagId}")]
         public ActionResult DeleteTagForItem(Guid itemId, Guid tagId)
         {
-            if (!_itemDirectoryRepository.ItemExists(itemId))
+            if (!_repository.ItemExists(itemId))
             {
                 return NotFound();
             }
 
-            var itemTagFromRepo = _itemDirectoryRepository.GetItemTag(itemId, tagId);
-            _itemDirectoryRepository.DeleteItemTag(itemTagFromRepo);
-            _itemDirectoryRepository.Save();
+            var itemTagFromRepo = _repository.GetItemTag(itemId, tagId);
+            _repository.DeleteItemTag(itemTagFromRepo);
+            _repository.Save();
 
             return NoContent();
         }

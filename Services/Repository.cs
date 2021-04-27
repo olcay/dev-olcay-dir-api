@@ -7,19 +7,19 @@ using System.Linq;
 
 namespace WebApi.Services
 {
-    public class ItemDirectoryRepository : IRepository, IDisposable
+    public class Repository : IRepository, IDisposable
     {
         private readonly DataContext _context;
         private readonly IPropertyMappingService _propertyMappingService;
 
-        public ItemDirectoryRepository(DataContext context,
+        public Repository(DataContext context,
             IPropertyMappingService propertyMappingService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _propertyMappingService = propertyMappingService ?? 
+            _propertyMappingService = propertyMappingService ??
                 throw new ArgumentNullException(nameof(propertyMappingService));
         }
-        
+
         public void AddItemTag(Guid itemId, Guid tagId)
         {
             if (itemId == Guid.Empty)
@@ -32,14 +32,14 @@ namespace WebApi.Services
                 throw new ArgumentNullException(nameof(tagId));
             }
 
-            _context.ItemTags.Add(new ItemTag(){ ItemId = itemId, TagId = tagId }); 
-        }         
+            _context.ItemTags.Add(new ItemTag() { ItemId = itemId, TagId = tagId });
+        }
 
         public void DeleteItemTag(ItemTag itemTag)
         {
             if (itemTag != null) _context.ItemTags.Remove(itemTag);
         }
-  
+
         public ItemTag GetItemTag(Guid itemId, Guid tagId)
         {
             if (itemId == Guid.Empty)
@@ -87,7 +87,7 @@ namespace WebApi.Services
             }
 
             return _context.Tags
-                        .Where(c => c.ItemTags.Any(i=> i.ItemId == itemId))
+                        .Where(c => c.ItemTags.Any(i => i.ItemId == itemId))
                         .OrderBy(c => c.Name).ToList();
         }
 
@@ -123,7 +123,7 @@ namespace WebApi.Services
 
             _context.Items.Remove(item);
         }
-        
+
         public Item GetItem(Guid itemId)
         {
             if (itemId == Guid.Empty)
@@ -133,14 +133,14 @@ namespace WebApi.Services
 
             return _context.Items.FirstOrDefault(a => a.Id == itemId);
         }
-        
+
         public PagedList<Item> GetItems(ItemsResourceParameters itemsResourceParameters)
         {
             if (itemsResourceParameters == null)
             {
                 throw new ArgumentNullException(nameof(itemsResourceParameters));
             }
-            
+
             var collection = _context.Items as IQueryable<Item>;
 
             if (itemsResourceParameters.CreatedById > 0)
@@ -157,7 +157,7 @@ namespace WebApi.Services
             if (!string.IsNullOrWhiteSpace(itemsResourceParameters.OrderBy))
             {
                 // get property mapping dictionary
-                var itemPropertyMappingDictionary = 
+                var itemPropertyMappingDictionary =
                     _propertyMappingService.GetPropertyMapping<Models.ItemDto, Item>();
 
                 collection = collection.ApplySort(itemsResourceParameters.OrderBy,
@@ -166,7 +166,7 @@ namespace WebApi.Services
 
             return PagedList<Item>.Create(collection,
                 itemsResourceParameters.PageNumber,
-                itemsResourceParameters.PageSize); 
+                itemsResourceParameters.PageSize);
         }
 
         public IEnumerable<Item> GetItems(IEnumerable<Guid> itemIds)
@@ -201,8 +201,127 @@ namespace WebApi.Services
         {
             if (disposing)
             {
-               // dispose resources when needed
+                // dispose resources when needed
             }
+        }
+
+        public IEnumerable<Race> GetRaces(int petType)
+        {
+            if (!Enum.IsDefined(typeof(PetType), petType))
+            {
+                throw new AppException("Invalid pet type");
+            }
+
+            var petTypeEnum = (PetType)petType;
+
+            return _context.Races
+                .Where(c => c.PetType == petTypeEnum)
+                .OrderBy(c => c.Name).ToList();
+        }
+
+        public PagedList<Pet> GetPets(PetsResourceParameters resourceParameters)
+        {
+            if (resourceParameters == null)
+            {
+                throw new ArgumentNullException(nameof(resourceParameters));
+            }
+
+            var collection = _context.Pets as IQueryable<Pet>;
+
+            if (resourceParameters.PetTypeId > 0)
+            {
+                if (!Enum.IsDefined(typeof(PetType), resourceParameters.PetTypeId))
+                {
+                    throw new AppException("Invalid pet type");
+                }
+
+                var petTypeEnum = (PetType)resourceParameters.PetTypeId;
+
+                collection = collection.Where(a => a.PetType == petTypeEnum);
+            }
+
+            if (resourceParameters.CreatedById > 0)
+            {
+                collection = collection.Where(a => a.CreatedById == resourceParameters.CreatedById);
+            }
+
+            if (resourceParameters.CityId > 0)
+            {
+                collection = collection.Where(a => a.CityId == resourceParameters.CityId);
+            }
+
+            if (resourceParameters.RaceId > 0)
+            {
+                collection = collection.Where(a => a.RaceId == resourceParameters.RaceId);
+            }
+
+            if (resourceParameters.AgeId > 0)
+            {
+                if (!Enum.IsDefined(typeof(PetAge), resourceParameters.AgeId))
+                {
+                    throw new AppException("Invalid age id");
+                }
+
+                var enumAge = (PetAge)resourceParameters.AgeId;
+
+                collection = collection.Where(a => a.Age == enumAge);
+            }
+
+            if (resourceParameters.GenderId > 0)
+            {
+                if (!Enum.IsDefined(typeof(Gender), resourceParameters.GenderId))
+                {
+                    throw new AppException("Invalid gender id");
+                }
+
+                var enumGender = (Gender)resourceParameters.GenderId;
+
+                collection = collection.Where(a => a.Gender == enumGender);
+            }
+
+            if (resourceParameters.SizeId > 0)
+            {
+                if (!Enum.IsDefined(typeof(Size), resourceParameters.SizeId))
+                {
+                    throw new AppException("Invalid size id");
+                }
+
+                var enumSize = (Size)resourceParameters.SizeId;
+
+                collection = collection.Where(a => a.Size == enumSize);
+            }
+
+            if (resourceParameters.FromWhereId > 0)
+            {
+                if (!Enum.IsDefined(typeof(FromWhere), resourceParameters.FromWhereId))
+                {
+                    throw new AppException("Invalid from where id");
+                }
+
+                var enumFromWhere = (FromWhere)resourceParameters.FromWhereId;
+
+                collection = collection.Where(a => a.FromWhere == enumFromWhere);
+            }
+
+            if (!string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
+            {
+                var searchQuery = resourceParameters.SearchQuery.Trim();
+                collection = collection.Where(a => a.Title.Contains(searchQuery));
+            }
+
+            if (!string.IsNullOrWhiteSpace(resourceParameters.OrderBy))
+            {
+                // get property mapping dictionary
+                var propertyMappingDictionary =
+                    _propertyMappingService.GetPropertyMapping<Models.PetDto, Pet>();
+
+                collection = collection.ApplySort(resourceParameters.OrderBy,
+                    propertyMappingDictionary);
+            }
+
+            return PagedList<Pet>.Create(collection,
+                resourceParameters.PageNumber,
+                resourceParameters.PageSize);
         }
     }
 }

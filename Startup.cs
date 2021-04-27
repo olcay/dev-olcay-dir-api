@@ -130,7 +130,7 @@ namespace WebApi
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             // configure DI for application services
-            services.AddScoped<IRepository, ItemDirectoryRepository>();
+            services.AddScoped<IRepository, Repository>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
         }

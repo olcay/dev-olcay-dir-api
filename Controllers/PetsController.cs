@@ -17,16 +17,16 @@ using Microsoft.AspNetCore.JsonPatch;
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("api/items")]
+    [Route("api/pets")]
     [Produces("application/json")]
-    public class ItemsController : BaseController
+    public class PetsController : BaseController
     {
         private readonly IRepository _repository;
         private readonly IMapper _mapper;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IPropertyCheckerService _propertyCheckerService;
 
-        public ItemsController(IRepository repository,
+        public PetsController(IRepository repository,
             IMapper mapper, IPropertyMappingService propertyMappingService,
             IPropertyCheckerService propertyCheckerService)
         {
@@ -39,60 +39,60 @@ namespace WebApi.Controllers
             _propertyCheckerService = propertyCheckerService ??
               throw new ArgumentNullException(nameof(propertyCheckerService));
         }
-        
-        [HttpGet(Name = "GetItems")]
+
+        [HttpGet(Name = "GetPets")]
         [HttpHead]
-        public ActionResult<LinkedCollectionResourceDto> GetItems(
-            [FromQuery] ItemsResourceParameters itemsResourceParameters)
-        {            
-            if (!_propertyMappingService.ValidMappingExistsFor<ItemDto, Item>(itemsResourceParameters.OrderBy))
+        public ActionResult<LinkedCollectionResourceDto> GetPets(
+            [FromQuery] PetsResourceParameters resourceParameters)
+        {
+            if (!_propertyMappingService.ValidMappingExistsFor<PetDto, Pet>(resourceParameters.OrderBy))
             {
                 return BadRequest();
             }
 
-            if (!_propertyCheckerService.TypeHasProperties<ItemDto>(itemsResourceParameters.Fields))
+            if (!_propertyCheckerService.TypeHasProperties<PetDto>(resourceParameters.Fields))
             {
                 return BadRequest();
             }
 
-            var itemsFromRepo = _repository.GetItems(itemsResourceParameters);
-                    
+            var itemsFromRepo = _repository.GetPets(resourceParameters);
+
             var paginationMetadata = new PaginationDto
             (
                 itemsFromRepo.TotalCount,
                 itemsFromRepo.PageSize,
                 itemsFromRepo.CurrentPage,
-                itemsFromRepo.TotalPages 
+                itemsFromRepo.TotalPages
             );
 
-            var links = CreateLinksForItems(itemsResourceParameters,
+            var links = CreateLinksForPets(resourceParameters,
                 itemsFromRepo.HasNext,
                 itemsFromRepo.HasPrevious);
 
-            var shapedItems = _mapper.Map<IEnumerable<ItemDto>>(itemsFromRepo)
-                               .ShapeData(itemsResourceParameters.Fields);
+            var shapedItems = _mapper.Map<IEnumerable<PetDto>>(itemsFromRepo)
+                               .ShapeData(resourceParameters.Fields);
 
             var shapedItemsWithLinks = shapedItems.Select(item =>
             {
                 var itemAsDictionary = item as IDictionary<string, object>;
-                var itemLinks = CreateLinksForItem((Guid)itemAsDictionary["Id"], null);
+                var itemLinks = CreateLinksForPet((Guid)itemAsDictionary["Id"], null);
                 itemAsDictionary.Add("links", itemLinks);
                 return itemAsDictionary;
             });
 
             var linkedCollectionResource = new LinkedCollectionResourceDto(shapedItemsWithLinks, links, paginationMetadata);
 
-            return Ok(linkedCollectionResource);             
+            return Ok(linkedCollectionResource);
         }
 
-        [Produces("application/json", 
+        [Produces("application/json",
             "application/vnd.marvin.hateoas+json",
-            "application/vnd.marvin.item.full+json", 
+            "application/vnd.marvin.item.full+json",
             "application/vnd.marvin.item.full.hateoas+json",
-            "application/vnd.marvin.item.friendly+json", 
+            "application/vnd.marvin.item.friendly+json",
             "application/vnd.marvin.item.friendly.hateoas+json")]
-        [HttpGet("{itemId}", Name ="GetItem")]
-        public ActionResult<IDictionary<string, object>> GetItem(Guid itemId, string fields,
+        [HttpGet("{petId}", Name = "GetPet")]
+        public ActionResult<IDictionary<string, object>> GetPet(Guid petId, string fields,
               [FromHeader(Name = "Accept")] string mediaType)
         {
             if (!MediaTypeHeaderValue.TryParse(mediaType,
@@ -107,7 +107,7 @@ namespace WebApi.Controllers
                 return BadRequest();
             }
 
-            var itemFromRepo = _repository.GetItem(itemId);
+            var itemFromRepo = _repository.GetItem(petId);
 
             if (itemFromRepo == null)
             {
@@ -121,7 +121,7 @@ namespace WebApi.Controllers
 
             if (includeLinks)
             {
-                links = CreateLinksForItem(itemId, fields);
+                links = CreateLinksForPet(petId, fields);
             }
 
             var primaryMediaType = includeLinks ?
@@ -155,14 +155,14 @@ namespace WebApi.Controllers
             return Ok(friendlyResourceToReturn);
         }
 
-        [HttpPost(Name = "CreateItem")]
+        [HttpPost(Name = "CreatePet")]
         [Consumes(
             "application/json",
             "application/vnd.marvin.itemforcreation+json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize]
-        public ActionResult<ItemDto> CreateItem(ItemForCreationDto item)
+        public ActionResult<ItemDto> CreatePet(ItemForCreationDto item)
         {
             if (!TryValidateModel(item))
             {
@@ -185,26 +185,26 @@ namespace WebApi.Controllers
 
             var itemToReturn = _mapper.Map<ItemDto>(itemEntity);
 
-            var links = CreateLinksForItem(itemToReturn.Id, null);
-             
+            var links = CreateLinksForPet(itemToReturn.Id, null);
+
             var linkedResourceToReturn = itemToReturn.ShapeData(null)
                 as IDictionary<string, object>;
             linkedResourceToReturn.Add("links", links);
 
-            return CreatedAtRoute("GetItem",
-                new { itemId = linkedResourceToReturn["Id"] },
+            return CreatedAtRoute("GetPet",
+                new { petId = linkedResourceToReturn["Id"] },
                 linkedResourceToReturn);
-        } 
+        }
 
         [HttpOptions]
-        public IActionResult GetItemsOptions()
+        public IActionResult GetPetsOptions()
         {
             Response.Headers.Add("Allow", "GET,OPTIONS,POST");
             return Ok();
         }
 
-        [HttpDelete("{itemId}", Name = "DeleteItem")]
-        public ActionResult DeleteItem(Guid itemId)
+        [HttpDelete("{itemId}", Name = "DeletePet")]
+        public ActionResult DeletePet(Guid itemId)
         {
             var itemFromRepo = _repository.GetItem(itemId);
 
@@ -220,138 +220,99 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{itemId}")]
-        public ActionResult PartiallyUpdateTagForItem(Guid itemId,
-            JsonPatchDocument<ItemForUpdateDto> patchDocument)
-        {
-            var itemFromRepo = _repository.GetItem(itemId);
-
-            if (itemFromRepo == null)
-            {
-                return NotFound();
-            }
-            
-            var itemToPatch = _mapper.Map<ItemForUpdateDto>(itemFromRepo);
-            // add validation
-            patchDocument.ApplyTo(itemToPatch, ModelState);
-
-            if (!TryValidateModel(itemToPatch))
-            {
-                return ValidationProblem(ModelState);
-            }
-
-            _mapper.Map(itemToPatch, itemFromRepo);
-
-            _repository.UpdateItem(itemFromRepo);
-
-            _repository.Save();
-
-            return NoContent();
-        }
-
-        private string CreateItemsResourceUri(
-           ItemsResourceParameters itemsResourceParameters,
+        private string CreatePetsResourceUri(
+           PetsResourceParameters resourceParameters,
            ResourceUriType type)
         {
             switch (type)
             {
                 case ResourceUriType.PreviousPage:
-                    return Url.Link("GetItems",
+                    return Url.Link("GetPets",
                       new
                       {
-                          fields = itemsResourceParameters.Fields,
-                          orderBy = itemsResourceParameters.OrderBy,
-                          pageNumber = itemsResourceParameters.PageNumber - 1,
-                          pageSize = itemsResourceParameters.PageSize,
-                          searchQuery = itemsResourceParameters.SearchQuery
+                          fields = resourceParameters.Fields,
+                          orderBy = resourceParameters.OrderBy,
+                          pageNumber = resourceParameters.PageNumber - 1,
+                          pageSize = resourceParameters.PageSize,
+                          searchQuery = resourceParameters.SearchQuery
                       });
                 case ResourceUriType.NextPage:
-                    return Url.Link("GetItems",
+                    return Url.Link("GetPets",
                       new
                       {
-                          fields = itemsResourceParameters.Fields,
-                          orderBy = itemsResourceParameters.OrderBy,
-                          pageNumber = itemsResourceParameters.PageNumber + 1,
-                          pageSize = itemsResourceParameters.PageSize,
-                          searchQuery = itemsResourceParameters.SearchQuery
+                          fields = resourceParameters.Fields,
+                          orderBy = resourceParameters.OrderBy,
+                          pageNumber = resourceParameters.PageNumber + 1,
+                          pageSize = resourceParameters.PageSize,
+                          searchQuery = resourceParameters.SearchQuery
                       });
                 case ResourceUriType.Current:
                 default:
-                    return Url.Link("GetItems",
+                    return Url.Link("GetPets",
                     new
                     {
-                        fields = itemsResourceParameters.Fields,
-                        orderBy = itemsResourceParameters.OrderBy,
-                        pageNumber = itemsResourceParameters.PageNumber,
-                        pageSize = itemsResourceParameters.PageSize,
-                        searchQuery = itemsResourceParameters.SearchQuery
+                        fields = resourceParameters.Fields,
+                        orderBy = resourceParameters.OrderBy,
+                        pageNumber = resourceParameters.PageNumber,
+                        pageSize = resourceParameters.PageSize,
+                        searchQuery = resourceParameters.SearchQuery
                     });
             }
 
         }
 
-        private IEnumerable<LinkDto> CreateLinksForItem(Guid itemId, string fields)
+        private IEnumerable<LinkDto> CreateLinksForPet(Guid petId, string fields)
         {
             var links = new List<LinkDto>();
 
             if (string.IsNullOrWhiteSpace(fields))
             {
                 links.Add(
-                  new LinkDto(Url.Link("GetItem", new { itemId }),
+                  new LinkDto(Url.Link("GetPet", new { petId }),
                   "self",
                   "GET"));
             }
             else
             {
                 links.Add(
-                  new LinkDto(Url.Link("GetItem", new { itemId, fields }),
+                  new LinkDto(Url.Link("GetPet", new { petId, fields }),
                   "self",
                   "GET"));
             }
 
             links.Add(
-               new LinkDto(Url.Link("DeleteItem", new { itemId }),
-               "delete_item",
+               new LinkDto(Url.Link("DeletePet", new { petId }),
+               "delete_pet",
                "DELETE"));
-
-            links.Add(
-                new LinkDto(Url.Link("CreateTagForItem", new { itemId }),
-                "create_tag_for_item",
-                "POST"));
-
-            links.Add(
-               new LinkDto(Url.Link("GetTagsForItem", new { itemId }),
-               "tags",
-               "GET"));
 
             return links;
         }
 
-        private IEnumerable<LinkDto> CreateLinksForItems(
-            ItemsResourceParameters itemsResourceParameters,
+        private IEnumerable<LinkDto> CreateLinksForPets(
+            PetsResourceParameters resourceParameters,
             bool hasNext, bool hasPrevious)
         {
             var links = new List<LinkDto>();
 
             // self 
             links.Add(
-               new LinkDto(CreateItemsResourceUri(
-                   itemsResourceParameters, ResourceUriType.Current)
+               new LinkDto(CreatePetsResourceUri(
+                   resourceParameters, ResourceUriType.Current)
                , "self", "GET"));
 
             if (hasNext)
             {
                 links.Add(
-                  new LinkDto(CreateItemsResourceUri(
-                      itemsResourceParameters, ResourceUriType.NextPage),
+                  new LinkDto(CreatePetsResourceUri(
+                      resourceParameters, ResourceUriType.NextPage),
                   "nextPage", "GET"));
             }
 
             if (hasPrevious)
             {
                 links.Add(
-                    new LinkDto(CreateItemsResourceUri(
-                        itemsResourceParameters, ResourceUriType.PreviousPage),
+                    new LinkDto(CreatePetsResourceUri(
+                        resourceParameters, ResourceUriType.PreviousPage),
                     "previousPage", "GET"));
             }
 
