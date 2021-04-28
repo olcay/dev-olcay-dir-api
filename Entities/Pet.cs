@@ -6,11 +6,6 @@ namespace WebApi.Entities
 {
     public class Pet
     {
-        public Pet()
-        {
-            CreationDate = DateTimeOffset.UtcNow;
-        }
-
         [Key]
         public Guid Id { get; set; }
 
@@ -45,20 +40,29 @@ namespace WebApi.Entities
         public int CityId { get; set; }
 
         [Required]
-        public DateTimeOffset CreationDate { get; set; }
+        public DateTimeOffset Created { get; set; }
 
         [ForeignKey("CreatedById")]
         public Account CreatedBy { get; set; }
 
         public int CreatedById { get; set; }
 
-        public bool FoundHome { get; set; }
+        [ForeignKey("AdoptedById")]
+        public Account AdoptedBy { get; set; }
 
-        public DateTimeOffset PublishDate { get; set; }
+        public int? AdoptedById { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public DateTimeOffset? Adopted { get; set; }
 
-        public bool IsPublished { get; set; }
+        public DateTimeOffset? Published { get; set; }
+
+        public DateTimeOffset? Deleted { get; set; }
+
+        public bool IsAdopted => Adopted.HasValue;
+
+        public bool IsDeleted => Deleted.HasValue;
+
+        public bool IsPublished => Published.HasValue;
     }
 
     public enum PetType

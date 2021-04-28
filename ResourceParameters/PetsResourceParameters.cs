@@ -16,7 +16,7 @@ namespace WebApi.ResourceParameters
             set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
         }
 
-        public string OrderBy { get; set; } = "PublishDate desc";
+        public string OrderBy { get; set; } = "Published desc";
         
         public string Fields { get; set; }
 

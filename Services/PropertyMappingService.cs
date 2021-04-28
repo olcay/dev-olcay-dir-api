@@ -18,7 +18,7 @@ namespace WebApi.Services
         private Dictionary<string, PropertyMappingValue> _petPropertyMapping =
            new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
            {
-               { "PublishDate", new PropertyMappingValue(new List<string>() { "PublishDate" } ) },
+               { "Published", new PropertyMappingValue(new List<string>() { "Published" } ) },
                { "Age", new PropertyMappingValue(new List<string>() { "Age" } )}
            };
 

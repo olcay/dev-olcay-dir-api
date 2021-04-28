@@ -6,11 +6,6 @@ namespace WebApi.Entities
 {
     public class Action
     {
-        public Action()
-        {
-            CreationDate = DateTimeOffset.UtcNow;
-        }
-
         [Key]
         public Guid Id { get; set; }
 
@@ -20,17 +15,21 @@ namespace WebApi.Entities
         public string IpAddress { get; set; }
 
         [Required]
-        public DateTimeOffset CreationDate { get; set; }
+        public DateTimeOffset Created { get; set; }
 
         [ForeignKey("PetId")]
         public Pet Pet { get; set; }
 
         public Guid PetId { get; set; }
+
+        [MaxLength(1000)]
+        public string Message { get; set; }
     }
 
     public enum ActionType
     {
         View,
-        Share
+        Share,
+        Flag
     }
 }

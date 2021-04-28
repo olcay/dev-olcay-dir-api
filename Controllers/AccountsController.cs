@@ -134,7 +134,7 @@ namespace WebApi.Controllers
             if (Account.Role != Role.Admin)
                 model.Role = null;
 
-            var account = _accountService.Update(id, model);
+            var account = _accountService.Update(id, model, Request.Headers["origin"]);
             return Ok(account);
         }
 

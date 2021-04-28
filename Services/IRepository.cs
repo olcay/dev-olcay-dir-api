@@ -26,5 +26,8 @@ namespace WebApi.Services
         bool Save();
 
         PagedList<Pet> GetPets(PetsResourceParameters resourceParameters);
+        Pet GetPet(Guid petId);
+        void AddPet(Pet pet);
+        void UpdatePet(Pet pet);
     }
 }

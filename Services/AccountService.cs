@@ -28,7 +28,7 @@ namespace WebApi.Services
         IEnumerable<AccountResponse> GetAll();
         AccountResponse GetById(int id);
         AccountResponse Create(CreateRequest model);
-        AccountResponse Update(int id, UpdateRequest model);
+        AccountResponse Update(int id, UpdateRequest model, string origin);
         void Delete(int id);
     }
 
@@ -82,7 +82,7 @@ namespace WebApi.Services
 
             // replace old refresh token with a new one and save
             var newRefreshToken = generateRefreshToken(ipAddress);
-            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.Revoked = DateTimeOffset.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             refreshToken.ReplacedByToken = newRefreshToken.Token;
             account.RefreshTokens.Add(newRefreshToken);
@@ -106,7 +106,7 @@ namespace WebApi.Services
             var (refreshToken, account) = getRefreshToken(token);
 
             // revoke token and save
-            refreshToken.Revoked = DateTime.UtcNow;
+            refreshToken.Revoked = DateTimeOffset.UtcNow;
             refreshToken.RevokedByIp = ipAddress;
             _context.Update(account);
             _context.SaveChanges();
@@ -128,8 +128,12 @@ namespace WebApi.Services
             // first registered account is an admin
             var isFirstAccount = _context.Accounts.Count() == 0;
             account.Role = isFirstAccount ? Role.Admin : Role.User;
-            account.Created = DateTime.UtcNow;
+            account.Created = DateTimeOffset.UtcNow;
             account.VerificationToken = randomTokenString();
+            account.DisplayName = randomUsername();
+
+            if (_context.Accounts.Any(x => x.DisplayName == account.DisplayName))
+                throw new AppException($"Lütfen tekrar deneyin.");
 
             // hash password
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -148,7 +152,7 @@ namespace WebApi.Services
 
             if (account == null) throw new AppException("Verification failed");
 
-            account.Verified = DateTime.UtcNow;
+            account.Verified = DateTimeOffset.UtcNow;
             account.VerificationToken = null;
 
             _context.Accounts.Update(account);
@@ -164,7 +168,7 @@ namespace WebApi.Services
 
             // create reset token that expires after 1 day
             account.ResetToken = randomTokenString();
-            account.ResetTokenExpires = DateTime.UtcNow.AddDays(1);
+            account.ResetTokenExpires = DateTimeOffset.UtcNow.AddDays(1);
 
             _context.Accounts.Update(account);
             _context.SaveChanges();
@@ -177,7 +181,7 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTime.UtcNow);
+                x.ResetTokenExpires > DateTimeOffset.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");
@@ -187,14 +191,14 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTime.UtcNow);
+                x.ResetTokenExpires > DateTimeOffset.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");
 
             // update password and remove reset token
             account.PasswordHash = BC.HashPassword(model.Password);
-            account.PasswordReset = DateTime.UtcNow;
+            account.PasswordReset = DateTimeOffset.UtcNow;
             account.ResetToken = null;
             account.ResetTokenExpires = null;
 
@@ -218,12 +222,15 @@ namespace WebApi.Services
         {
             // validate
             if (_context.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException($"Email '{model.Email}' is already registered");
+                throw new AppException($"Email adresi '{model.Email}' zaten kayıtlı");
+
+            if (_context.Accounts.Any(x => x.DisplayName == model.DisplayName))
+                throw new AppException($"Kullanıcı adı '{model.DisplayName}' zaten kayıtlı");
 
             // map model to new account object
             var account = _mapper.Map<Account>(model);
-            account.Created = DateTime.UtcNow;
-            account.Verified = DateTime.UtcNow;
+            account.Created = DateTimeOffset.UtcNow;
+            account.Verified = DateTimeOffset.UtcNow;
 
             // hash password
             account.PasswordHash = BC.HashPassword(model.Password);
@@ -235,13 +242,25 @@ namespace WebApi.Services
             return _mapper.Map<AccountResponse>(account);
         }
 
-        public AccountResponse Update(int id, UpdateRequest model)
+        public AccountResponse Update(int id, UpdateRequest model, string origin)
         {
             var account = getAccount(id);
 
+            var isEmailChanged = false;
+
             // validate
-            if (account.Email != model.Email && _context.Accounts.Any(x => x.Email == model.Email))
-                throw new AppException($"Email '{model.Email}' is already taken");
+            if (account.Email != model.Email)
+            {
+                if (_context.Accounts.Any(x => x.Email == model.Email))
+                    throw new AppException($"Email '{model.Email}' is already taken");
+
+                isEmailChanged = true;
+                account.VerificationToken = randomTokenString();
+                account.Verified = null;
+            }
+
+            if (account.DisplayName != model.DisplayName && _context.Accounts.Any(x => x.DisplayName == model.DisplayName))
+                throw new AppException($"Kullanıcı adı '{model.DisplayName}' zaten kayıtlı");
 
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
@@ -249,9 +268,14 @@ namespace WebApi.Services
 
             // copy model to account and save
             _mapper.Map(model, account);
-            account.Updated = DateTime.UtcNow;
+            account.Updated = DateTimeOffset.UtcNow;
             _context.Accounts.Update(account);
             _context.SaveChanges();
+
+            if (isEmailChanged)
+            {
+                sendVerificationEmail(account, origin);
+            }
 
             return _mapper.Map<AccountResponse>(account);
         }
@@ -300,8 +324,8 @@ namespace WebApi.Services
             return new RefreshToken
             {
                 Token = randomTokenString(),
-                Expires = DateTime.UtcNow.AddDays(7),
-                Created = DateTime.UtcNow,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Created = DateTimeOffset.UtcNow,
                 CreatedByIp = ipAddress
             };
         }
@@ -310,7 +334,7 @@ namespace WebApi.Services
         {
             account.RefreshTokens.RemoveAll(x => 
                 !x.IsActive && 
-                x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTime.UtcNow);
+                x.Created.AddDays(_appSettings.RefreshTokenTTL) <= DateTimeOffset.UtcNow);
         }
 
         private string randomTokenString()
@@ -322,14 +346,22 @@ namespace WebApi.Services
             return BitConverter.ToString(randomBytes).Replace("-", "");
         }
 
+        private string randomUsername()
+        {
+            var guid = Guid.NewGuid().ToString().Split("-").First();
+
+            return "ku" + guid;
+        }
+
         private void sendVerificationEmail(Account account, string origin)
         {
             string message;
             if (!string.IsNullOrEmpty(origin))
             {
                 var verifyUrl = $"{origin}/account/verify-email?token={account.VerificationToken}";
-                message = $@"<p>Please click the below link to verify your email address:</p>
-                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>";
+                message = $@"<p>Lütfen eposta adresinizi aşağıdaki bağlantıya tıklayarak onaylayın:</p>
+                             <p><a href=""{verifyUrl}"">{verifyUrl}</a></p>
+                             <p>Eğer bağlantı tıklanabilir değilse, kopyalayıp adres çubuğuna yapıştırarak erişebilirsiniz.</p>";
             }
             else
             {
@@ -339,10 +371,11 @@ namespace WebApi.Services
 
             _emailService.Send(
                 to: account.Email,
-                subject: "Sign-up Verification API - Verify Email",
-                html: $@"<h4>Verify Email</h4>
-                         <p>Thanks for registering!</p>
-                         {message}"
+                subject: "Eposta adresi onayı",
+                html: $@"<h4>Eposta Adresinizi Onaylayınız</h4>
+                         <p>Sitemize kayıt olduğunuz için teşekkürler! Sitemizden daha fazla yararlanabilmeniz için eposta adresinizin size ait olup olmadığını onaylamanız gerekiyor.</p>
+                         {message}
+                         <p>Bu epostanın tarafınıza yanlışlıkla ulaştığını düşünüyorsanız dikkate almayınız.</p>"
             );
         }
 

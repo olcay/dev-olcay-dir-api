@@ -4,6 +4,7 @@ using WebApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApi.Services
 {
@@ -226,7 +227,9 @@ namespace WebApi.Services
                 throw new ArgumentNullException(nameof(resourceParameters));
             }
 
-            var collection = _context.Pets as IQueryable<Pet>;
+            var collection = _context.Pets
+                                .Include(c => c.Race)
+                                .Where(c => !c.Deleted.HasValue);
 
             if (resourceParameters.PetTypeId > 0)
             {
@@ -322,6 +325,41 @@ namespace WebApi.Services
             return PagedList<Pet>.Create(collection,
                 resourceParameters.PageNumber,
                 resourceParameters.PageSize);
+        }
+
+        public Pet GetPet(Guid petId)
+        {
+            if (petId == Guid.Empty)
+            {
+                throw new AppException(nameof(petId));
+            }
+
+            var pet = _context.Pets.Include(p => p.Race).FirstOrDefault(a => a.Id == petId);
+
+            if (pet == null)
+            {
+                throw new KeyNotFoundException("Pet not found");
+            }
+
+            return pet;
+        }
+
+        public void AddPet(Pet pet)
+        {
+            if (pet == null)
+            {
+                throw new AppException(nameof(pet));
+            }
+
+            // the repository fills the id (instead of using identity columns)
+            pet.Id = Guid.NewGuid();
+
+            _context.Pets.Add(pet);
+        }
+
+        public void UpdatePet(Pet pet)
+        {
+            _context.Pets.Update(pet);
         }
     }
 }
