@@ -68,11 +68,12 @@ namespace WebApi.Entities
     public enum PetType
     {
         Cat = 1,
-        Dog = 2       
+        Dog = 2
     }
 
     public enum PetAge
     {
+        None = 0,
         Baby = 1,
         Young = 2,
         Adult = 3,
@@ -81,12 +82,14 @@ namespace WebApi.Entities
 
     public enum Gender
     {
+        None = 0,
         Male = 2,
         Female = 1
     }
 
     public enum Size
     {
+        None = 0,
         Small = 1,
         Medium = 2,
         Large = 3
@@ -94,6 +97,7 @@ namespace WebApi.Entities
 
     public enum FromWhere
     {
+        None = 0,
         Shelter = 1,
         Vet = 2,
         Foster = 3,

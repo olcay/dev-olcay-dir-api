@@ -3,29 +3,29 @@ using WebApi.Models.Accounts;
 
 namespace WebApi.Models
 {
-    public class PetDto
+    public class PetFullDto
     {
         public Guid Id { get; set; }
 
         public string Name { get; set; }
         
-        public string PetTypeText { get; set; }
+        public EnumDto PetType { get; set; }
 
-        public string AgeText { get; set; }
+        public EnumDto Age { get; set; }
 
-        public string GenderText { get; set; }
+        public EnumDto Gender { get; set; }
 
-        public string SizeText { get; set; }
+        public EnumDto Size { get; set; }
 
-        public string FromWhereText { get; set; }
+        public EnumDto FromWhere { get; set; }
         
         public string Title { get; set; }
         
         public string Description { get; set; }
 
-        public string RaceName { get; set; }
+        public RaceDto Race { get; set; }
 
-        public string CityText { get; set; }
+        public EnumDto City { get; set; }
         
         public DateTimeOffset Created { get; set; }
         

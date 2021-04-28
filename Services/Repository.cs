@@ -334,7 +334,10 @@ namespace WebApi.Services
                 throw new AppException(nameof(petId));
             }
 
-            var pet = _context.Pets.Include(p => p.Race).FirstOrDefault(a => a.Id == petId);
+            var pet = _context.Pets
+                            .Include(p => p.Race)
+                            .Include(p => p.CreatedBy)
+                            .FirstOrDefault(a => a.Id == petId);
 
             if (pet == null)
             {

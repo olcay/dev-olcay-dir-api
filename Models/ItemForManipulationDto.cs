@@ -1,10 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebApi.ValidationAttributes;
 
 namespace WebApi.Models
 {
-    [ItemTitleMustBeDifferentFromDescription(
-        ErrorMessage = "Title must be different from description.")]
     public abstract class ItemForManipulationDto
     {
         [Required(ErrorMessage = "You should fill out a title.")]

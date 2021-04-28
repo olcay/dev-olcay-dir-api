@@ -37,7 +37,7 @@ namespace WebApi.Controllers
 
         [HttpGet(Name = "GetPets")]
         [HttpHead]
-        public ActionResult<LinkedCollectionResourceDto> GetPets(
+        public ActionResult<CollectionResourceDto> GetPets(
             [FromQuery] PetsResourceParameters resourceParameters)
         {
             if (!_propertyMappingService.ValidMappingExistsFor<PetDto, Pet>(resourceParameters.OrderBy))
@@ -69,11 +69,11 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{petId}", Name = "GetPet")]
-        public ActionResult<PetDto> GetPet(Guid petId)
+        public ActionResult<PetFullDto> GetPet(Guid petId)
         {
             var pet = _repository.GetPet(petId);
 
-            var petDto = _mapper.Map<PetDto>(pet);
+            var petDto = _mapper.Map<PetFullDto>(pet);
 
             return Ok(petDto);
         }
@@ -82,8 +82,8 @@ namespace WebApi.Controllers
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [Authorize]
-        public ActionResult<PetDto> CreatePet(PetForCreationDto pet)
+        //[Authorize]
+        public ActionResult<PetFullDto> CreatePet(PetForCreationDto pet)
         {
             if (!TryValidateModel(pet))
             {
@@ -97,7 +97,7 @@ namespace WebApi.Controllers
             _repository.AddPet(petEntity);
             _repository.Save();
 
-            var itemToReturn = _mapper.Map<PetDto>(petEntity);
+            var itemToReturn = _mapper.Map<PetFullDto>(petEntity);
 
             var resourceToReturn = itemToReturn.ShapeData(null);
 

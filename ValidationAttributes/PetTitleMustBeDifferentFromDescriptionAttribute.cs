@@ -3,17 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.ValidationAttributes
 {
-    public class ItemTitleMustBeDifferentFromDescriptionAttribute : ValidationAttribute
+    public class PetTitleMustBeDifferentFromDescriptionAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, 
             ValidationContext validationContext)
         {
-            var item = (ItemForManipulationDto)validationContext.ObjectInstance;
+            var item = (PetForManipulationDto)validationContext.ObjectInstance;
 
             if (item.Title == item.Description)
             {
-                return new ValidationResult(ErrorMessage,
-                    new[] { nameof(ItemForManipulationDto) });
+                return new ValidationResult(ErrorMessage, new[] { nameof(PetForManipulationDto) });
             }
 
             return ValidationResult.Success;

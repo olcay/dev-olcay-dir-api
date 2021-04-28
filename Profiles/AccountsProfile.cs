@@ -10,6 +10,8 @@ namespace WebApi.Profiles
         {
             CreateMap<Account, AccountResponse>();
 
+            CreateMap<Account, AccountDto>();
+
             CreateMap<Account, AuthenticateResponse>();
 
             CreateMap<RegisterRequest, Account>();
