@@ -1,69 +1,69 @@
 using System.Collections.Generic;
 using System.Linq;
-using WebApi.Entities;
+using WebApi.Enums;
 using WebApi.Models;
 
 namespace WebApi.Services
 {
     public static class EnumService
     {
-        public static IEnumerable<EnumDto> GetPetTypes()
+        public static IEnumerable<EnumDto<PetType>> GetPetTypes()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = PetType.Cat.ToString(), Text = "Kedi" },
-                new EnumDto{ Value = PetType.Dog.ToString(), Text = "Köpek" }
+            return new List<EnumDto<PetType>>{
+                new EnumDto<PetType>{ Value = PetType.Cat, Text = "Kedi" },
+                new EnumDto<PetType>{ Value = PetType.Dog, Text = "Köpek" }
             };
         }
 
-        public static IEnumerable<EnumDto> GetPetStatuses()
+        public static IEnumerable<EnumDto<PetStatus>> GetPetStatuses()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = PetStatus.Created.ToString(), Text = "Yayında Değil" },
-                new EnumDto{ Value = PetStatus.Published.ToString(), Text = "Yayınlandı" },
-                new EnumDto{ Value = PetStatus.Adopted.ToString(), Text = "Evlat Edinildi" },
-                new EnumDto{ Value = PetStatus.Deleted.ToString(), Text = "Silindi" }
+            return new List<EnumDto<PetStatus>>{
+                new EnumDto<PetStatus>{ Value = PetStatus.Created, Text = "Yayında Değil" },
+                new EnumDto<PetStatus>{ Value = PetStatus.Published, Text = "Yayınlandı" },
+                new EnumDto<PetStatus>{ Value = PetStatus.Adopted, Text = "Evlat Edinildi" },
+                new EnumDto<PetStatus>{ Value = PetStatus.Deleted, Text = "Silindi" }
             };
         }
 
-        public static IEnumerable<EnumDto> GetGenders()
+        public static IEnumerable<EnumDto<Gender>> GetGenders()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = Gender.None.ToString(), Text = "-" },
-                new EnumDto{ Value = Gender.Female.ToString(), Text = "Dişi" },
-                new EnumDto{ Value = Gender.Male.ToString(), Text = "Erkek" }
+            return new List<EnumDto<Gender>>{
+                new EnumDto<Gender>{ Value = Gender.None, Text = "-" },
+                new EnumDto<Gender>{ Value = Gender.Female, Text = "Dişi" },
+                new EnumDto<Gender>{ Value = Gender.Male, Text = "Erkek" }
             };
         }
 
-        public static IEnumerable<EnumDto> GetAges()
+        public static IEnumerable<EnumDto<PetAge>> GetAges()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = PetAge.None.ToString(), Text = "-" },
-                new EnumDto{ Value = PetAge.Baby.ToString(), Text = "Yavru (0 - 6 Aylık)" },
-                new EnumDto{ Value = PetAge.Young.ToString(), Text = "Genç (6 Aylık - 2 Yaş)" },
-                new EnumDto{ Value = PetAge.Adult.ToString(), Text = "Yetişkin (2 - 7 Yaş)" },
-                new EnumDto{ Value = PetAge.Old.ToString(), Text = "Yaşlı (7 Yaş ve üzeri)" }
+            return new List<EnumDto<PetAge>>{
+                new EnumDto<PetAge>{ Value = PetAge.None, Text = "-" },
+                new EnumDto<PetAge>{ Value = PetAge.Baby, Text = "Yavru (0 - 6 Aylık)" },
+                new EnumDto<PetAge>{ Value = PetAge.Young, Text = "Genç (6 Aylık - 2 Yaş)" },
+                new EnumDto<PetAge>{ Value = PetAge.Adult, Text = "Yetişkin (2 - 7 Yaş)" },
+                new EnumDto<PetAge>{ Value = PetAge.Old, Text = "Yaşlı (7 Yaş ve üzeri)" }
             };
         }
 
-        public static IEnumerable<EnumDto> GetSizes()
+        public static IEnumerable<EnumDto<Size>> GetSizes()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = Size.None.ToString(), Text = "-" },
-                new EnumDto{ Value = Size.Small.ToString(), Text = "Küçük Boy" },
-                new EnumDto{ Value = Size.Medium.ToString(), Text = "Orta Boy" },
-                new EnumDto{ Value = Size.Large.ToString(), Text = "Büyük Boy" }
+            return new List<EnumDto<Size>>{
+                new EnumDto<Size>{ Value = Size.None, Text = "-" },
+                new EnumDto<Size>{ Value = Size.Small, Text = "Küçük Boy" },
+                new EnumDto<Size>{ Value = Size.Medium, Text = "Orta Boy" },
+                new EnumDto<Size>{ Value = Size.Large, Text = "Büyük Boy" }
             };
         }
 
-        public static IEnumerable<EnumDto> GetFromWhere()
+        public static IEnumerable<EnumDto<FromWhere>> GetFromWhere()
         {
-            return new List<EnumDto>{
-                new EnumDto{ Value = FromWhere.None.ToString(), Text = "-" },
-                new EnumDto{ Value = FromWhere.Shelter.ToString(), Text = "Barınaktan" },
-                new EnumDto{ Value = FromWhere.Foster.ToString(), Text = "Geçiçi Evinden" },
-                new EnumDto{ Value = FromWhere.Owner.ToString(), Text = "Sahibinden" },
-                new EnumDto{ Value = FromWhere.Street.ToString(), Text = "Sokaktan" },
-                new EnumDto{ Value = FromWhere.Vet.ToString(), Text = "Veteriner Hekimden" }
+            return new List<EnumDto<FromWhere>>{
+                new EnumDto<FromWhere>{ Value = FromWhere.None, Text = "-" },
+                new EnumDto<FromWhere>{ Value = FromWhere.Shelter, Text = "Barınaktan" },
+                new EnumDto<FromWhere>{ Value = FromWhere.Foster, Text = "Geçiçi Evinden" },
+                new EnumDto<FromWhere>{ Value = FromWhere.Owner, Text = "Sahibinden" },
+                new EnumDto<FromWhere>{ Value = FromWhere.Street, Text = "Sokaktan" },
+                new EnumDto<FromWhere>{ Value = FromWhere.Vet, Text = "Veteriner Hekimden" }
             };
         }
 

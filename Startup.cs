@@ -15,6 +15,8 @@ using WebApi.Helpers;
 using WebApi.Middleware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using WebApi.Persistence;
+using WebApi.Persistence.Services;
 
 namespace WebApi
 {

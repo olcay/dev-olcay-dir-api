@@ -12,6 +12,7 @@ using System.Text;
 using WebApi.Entities;
 using WebApi.Helpers;
 using WebApi.Models.Accounts;
+using WebApi.Persistence;
 
 namespace WebApi.Services
 {
@@ -181,7 +182,7 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTimeOffset.UtcNow);
+                x.ResetTokenExpires > DateTime.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");
@@ -191,7 +192,7 @@ namespace WebApi.Services
         {
             var account = _context.Accounts.SingleOrDefault(x =>
                 x.ResetToken == model.Token &&
-                x.ResetTokenExpires > DateTimeOffset.UtcNow);
+                x.ResetTokenExpires > DateTime.UtcNow);
 
             if (account == null)
                 throw new AppException("Invalid token");

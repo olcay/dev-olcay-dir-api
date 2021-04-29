@@ -138,15 +138,11 @@ namespace WebApi.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Accounts",
-                columns: new[] { "Id", "AcceptTerms", "Banned", "Created", "DisplayName", "Email", "FirstName", "LastName", "PasswordHash", "PasswordReset", "ResetToken", "ResetTokenExpires", "Role", "Updated", "VerificationToken", "Verified" },
-                values: new object[] { 1, true, null, new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)), null, "a@a.com", "Olcay", "Bayram", null, null, null, null, 0, null, null, new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)) });
-
-            migrationBuilder.InsertData(
                 table: "Races",
                 columns: new[] { "Id", "Name", "PetType" },
                 values: new object[,]
                 {
+                    { 1, "Abyssinian", 1 },
                     { 207, "Katalan Çoban Köpeği", 2 },
                     { 206, "Karst Çoban Köpeği", 2 },
                     { 205, "Kars Çoban Köpeği", 2 },
@@ -297,8 +293,8 @@ namespace WebApi.Migrations
                     { 251, "Pomeranyalı", 2 },
                     { 250, "Polonya Tazısı", 2 },
                     { 257, "Puli", 2 },
+                    { 304, "Wirehaired Pointing Griffon", 2 },
                     { 153, "Dachshund (Sosis)", 2 },
-                    { 152, "Çin Shar Pei", 2 },
                     { 151, "Çin Creste Köpeği", 2 },
                     { 54, "Sibirya Kedisi", 1 },
                     { 53, "Selkirk Rex", 1 },
@@ -335,9 +331,10 @@ namespace WebApi.Migrations
                     { 60, "Sphynx", 1 },
                     { 59, "Somali", 1 },
                     { 57, "Snowshoe (Karayak)", 1 },
+                    { 74, "Akita İnu", 2 },
                     { 38, "Manx", 1 },
-                    { 37, "Maine Coon", 1 },
                     { 36, "Laperm", 1 },
+                    { 16, "Burmilla (Silver Burmese)", 1 },
                     { 15, "Burmese", 1 },
                     { 14, "British Shorthair", 1 },
                     { 13, "Brazilian Shorthair", 1 },
@@ -352,11 +349,10 @@ namespace WebApi.Migrations
                     { 4, "American Keuda", 1 },
                     { 3, "American Curl", 1 },
                     { 2, "American Bobtail", 1 },
-                    { 1, "Abyssinian", 1 },
-                    { 16, "Burmilla (Silver Burmese)", 1 },
                     { 17, "Californian Spangled", 1 },
+                    { 37, "Maine Coon", 1 },
                     { 18, "Chartreux", 1 },
-                    { 19, "Chinchilla", 1 },
+                    { 20, "Colorpoint Shorthair", 1 },
                     { 35, "Korat", 1 },
                     { 34, "Kashmir ", 1 },
                     { 33, "Javanese", 1 },
@@ -364,18 +360,17 @@ namespace WebApi.Migrations
                     { 31, "İran Kedisi (Persian)", 1 },
                     { 30, "Honey Bear", 1 },
                     { 29, "Himalayan", 1 },
-                    { 74, "Akita İnu", 2 },
                     { 28, "Havana Brown", 1 },
+                    { 27, "Exotic Shorthair", 1 },
                     { 26, "European Shorthair", 1 },
                     { 25, "European Burmese", 1 },
                     { 24, "Egyptian Maular", 1 },
                     { 23, "Devon Rex", 1 },
                     { 22, "Cymric", 1 },
                     { 21, "Cornish Rex", 1 },
-                    { 20, "Colorpoint Shorthair", 1 },
-                    { 27, "Exotic Shorthair", 1 },
-                    { 304, "Wirehaired Pointing Griffon", 2 },
+                    { 19, "Chinchilla", 1 },
                     { 75, "Aksaray Malaklısı", 2 },
+                    { 76, "Alabay (Alabai)", 2 },
                     { 77, "Alaskan Malamute", 2 },
                     { 131, "Büyük İsveç Dağ Köpeği", 2 },
                     { 130, "Bullmastiff", 2 },
@@ -441,7 +436,7 @@ namespace WebApi.Migrations
                     { 108, "Belçika Groenendael", 2 },
                     { 107, "Bedlington Terrier", 2 },
                     { 106, "Beauceron", 2 },
-                    { 76, "Alabay (Alabai)", 2 },
+                    { 152, "Çin Shar Pei", 2 },
                     { 105, "Beagle", 2 },
                     { 103, "Basset Hound", 2 },
                     { 102, "Basenji", 2 },
@@ -453,11 +448,6 @@ namespace WebApi.Migrations
                     { 104, "Bavyera Dağ Tazısı", 2 },
                     { 305, "Yorkshire Terrier", 2 }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Pets",
-                columns: new[] { "Id", "AdoptedById", "Age", "CityId", "Created", "CreatedById", "Description", "FromWhere", "Gender", "Name", "PetStatus", "PetType", "Published", "RaceId", "Size", "Title" },
-                values: new object[] { new Guid("102b566b-ba1f-404c-b2df-e2cde39ade09"), null, 1, 34, new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)), 1, "Evde anne sütüyle büyüyen oyuncu", 3, 1, "Mişa", 1, 1, new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)), 43, 1, "Norveç orman melezi bebek" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pets_AdoptedById",

@@ -6,4 +6,11 @@
 
         public string Text { get; set; }
     }
+
+    public class EnumDto<T>
+    {
+        public T Value { get; set; }
+
+        public string Text { get; set; }
+    }
 }

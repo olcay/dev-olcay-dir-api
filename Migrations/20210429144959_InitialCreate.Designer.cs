@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using WebApi.Helpers;
+using WebApi.Persistence;
 
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210429122759_InitialCreate")]
+    [Migration("20210429144959_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,19 +111,6 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Accounts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AcceptTerms = true,
-                            Created = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            Email = "a@a.com",
-                            FirstName = "Olcay",
-                            LastName = "Bayram",
-                            Role = 0,
-                            Verified = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Pet", b =>
@@ -191,26 +178,6 @@ namespace WebApi.Migrations
                     b.HasIndex("RaceId");
 
                     b.ToTable("Pets");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("102b566b-ba1f-404c-b2df-e2cde39ade09"),
-                            Age = 1,
-                            CityId = 34,
-                            Created = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            CreatedById = 1,
-                            Description = "Evde anne sütüyle büyüyen oyuncu",
-                            FromWhere = 3,
-                            Gender = 1,
-                            Name = "Mişa",
-                            PetStatus = 1,
-                            PetType = 1,
-                            Published = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
-                            RaceId = 43,
-                            Size = 1,
-                            Title = "Norveç orman melezi bebek"
-                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Race", b =>

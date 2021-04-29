@@ -11,6 +11,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Produces("application/json")]
     public class AccountsController : BaseController
     {
         private readonly IAccountService _accountService;

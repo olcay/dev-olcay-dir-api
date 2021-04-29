@@ -3,14 +3,15 @@ using WebApi.Helpers;
 using WebApi.ResourceParameters;
 using System;
 using System.Collections.Generic;
+using WebApi.Enums;
 
-namespace WebApi.Services
+namespace WebApi.Persistence.Services
 {
     public interface IRepository
     {
         bool Save(int? accountId);
 
-        IEnumerable<Race> GetRaces(int petType);
+        IEnumerable<Race> GetRaces(PetType petType);
 
         bool RaceExists(int raceId);
 

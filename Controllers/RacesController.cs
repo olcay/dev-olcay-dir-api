@@ -1,10 +1,11 @@
 using AutoMapper;
 using WebApi.Models;
-using WebApi.Services;
 using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using WebApi.Persistence.Services;
+using WebApi.Enums;
 
 namespace WebApi.Controllers
 {
@@ -28,10 +29,10 @@ namespace WebApi.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet("{petType}")]
-        public ActionResult<IEnumerable<RaceDto>> GetRacesForPetType(int petType)
+        [HttpGet("{petTypeValue}")]
+        public ActionResult<IEnumerable<RaceDto>> GetRacesForPetType(PetType petTypeValue)
         {
-            var races = _repository.GetRaces(petType);
+            var races = _repository.GetRaces(petTypeValue);
             return Ok(_mapper.Map<IEnumerable<RaceDto>>(races));
         }
     }

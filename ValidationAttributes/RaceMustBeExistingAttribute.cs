@@ -1,6 +1,6 @@
 ﻿using WebApi.Models;
 using System.ComponentModel.DataAnnotations;
-using WebApi.Services;
+using WebApi.Persistence.Services;
 
 namespace WebApi.ValidationAttributes
 {

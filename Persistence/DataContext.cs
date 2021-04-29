@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using WebApi.Entities;
+using WebApi.Enums;
 
-namespace WebApi.Helpers
+namespace WebApi.Persistence
 {
     public class DataContext : DbContext
     {
@@ -332,40 +333,6 @@ namespace WebApi.Helpers
             };
 
             modelBuilder.Entity<Race>().HasData(allRaces);
-
-            var account = new Account()
-            {
-                Id = 1,
-                Email = "a@a.com",
-                FirstName = "Olcay",
-                LastName = "Bayram",
-                AcceptTerms = true,
-                Role = Role.Admin,
-                Verified = new DateTime(1950, 7, 23),
-                Created = new DateTime(1950, 7, 23)
-            };
-
-            modelBuilder.Entity<Account>().HasData(account);
-
-            var pet = new Pet{
-                Id = Guid.Parse("102b566b-ba1f-404c-b2df-e2cde39ade09"),
-                Age = PetAge.Baby,
-                CityId = 34,
-                CreatedById = 1,
-                Created = new DateTime(2021, 4, 26),
-                Description = "Evde anne sütüyle büyüyen oyuncu",
-                FromWhere = FromWhere.Foster,
-                Gender = Gender.Female,
-                Published = new DateTime(2021, 4, 26),
-                Name = "Mişa",
-                PetType = PetType.Cat,
-                RaceId = 43,
-                Size = Size.Small,
-                Title = "Norveç orman melezi bebek",
-                PetStatus = PetStatus.Created
-            };
-
-            modelBuilder.Entity<Pet>().HasData(pet);
 
             base.OnModelCreating(modelBuilder);
         }

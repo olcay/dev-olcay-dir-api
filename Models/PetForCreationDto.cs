@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using WebApi.Entities;
+using WebApi.Enums;
 
 namespace WebApi.Models
 {

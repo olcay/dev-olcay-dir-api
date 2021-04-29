@@ -1,4 +1,5 @@
 ﻿using System;
+using WebApi.Enums;
 using WebApi.Models.Accounts;
 
 namespace WebApi.Models
@@ -11,15 +12,15 @@ namespace WebApi.Models
 
         public string PetStatusText { get; set; }
         
-        public EnumDto PetType { get; set; }
+        public EnumDto<PetType> PetType { get; set; }
 
-        public EnumDto Age { get; set; }
+        public EnumDto<PetAge> Age { get; set; }
 
-        public EnumDto Gender { get; set; }
+        public EnumDto<Gender> Gender { get; set; }
 
-        public EnumDto Size { get; set; }
+        public EnumDto<Size> Size { get; set; }
 
-        public EnumDto FromWhere { get; set; }
+        public EnumDto<FromWhere> FromWhere { get; set; }
         
         public string Title { get; set; }
         

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using WebApi.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
+using WebApi.Persistence.Services;
 
 namespace WebApi.Controllers
 {
@@ -87,8 +88,7 @@ namespace WebApi.Controllers
         public ActionResult<PetFullDto> CreatePet(PetForCreationDto pet)
         {
             var petEntity = _mapper.Map<Pet>(pet);
-            petEntity.CreatedById = Account.Id;
-            petEntity.Created = DateTimeOffset.UtcNow;
+            petEntity.Create(Account.Id);
 
             _repository.AddPet(petEntity);
             _repository.Save(Account.Id);
@@ -162,8 +162,7 @@ namespace WebApi.Controllers
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            petFromRepo.Published = DateTimeOffset.UtcNow;
-            petFromRepo.PetStatus = PetStatus.Published;
+            petFromRepo.Publish();
 
             _repository.UpdatePet(petFromRepo);
             _repository.Save(Account.Id);
@@ -180,7 +179,7 @@ namespace WebApi.Controllers
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            petFromRepo.PetStatus = PetStatus.Deleted;
+            petFromRepo.Delete();
 
             _repository.UpdatePet(petFromRepo);
             _repository.Save(Account.Id);

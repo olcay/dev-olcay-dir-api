@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using WebApi.Services;
+using WebApi.Enums;
 
-namespace WebApi.Services
+namespace WebApi.Persistence.Services
 {
     public class Repository : IRepository, IDisposable
     {
@@ -44,17 +46,10 @@ namespace WebApi.Services
             }
         }
 
-        public IEnumerable<Race> GetRaces(int petType)
+        public IEnumerable<Race> GetRaces(PetType petType)
         {
-            if (!Enum.IsDefined(typeof(PetType), petType))
-            {
-                throw new AppException("Invalid pet type");
-            }
-
-            var petTypeEnum = (PetType)petType;
-
             return _context.Races
-                .Where(c => c.PetType == petTypeEnum)
+                .Where(c => c.PetType == petType)
                 .OrderBy(c => c.Name).ToList();
         }
 
@@ -71,11 +66,12 @@ namespace WebApi.Services
             }
 
             var collection = _context.Pets
-                                .Include(c => c.Race) as IQueryable<Pet>;
+                                .Include(c => c.Race)
+                                .Include(c => c.CreatedBy) as IQueryable<Pet>;
 
-            if (resourceParameters.PetType != null)
+            if (resourceParameters.PetType.HasValue)
             {
-                collection = collection.Where(a => a.PetType == resourceParameters.PetType);
+                collection = collection.Where(a => a.PetType == resourceParameters.PetType.Value);
             }
 
             if (resourceParameters.CreatedById > 0)
@@ -144,7 +140,7 @@ namespace WebApi.Services
             var pet = _context.Pets
                             .Include(p => p.Race)
                             .Include(p => p.CreatedBy)
-                            .FirstOrDefault(a => a.Id == petId);
+                            .SingleOrDefault(a => a.Id == petId);
 
             if (pet == null)
             {

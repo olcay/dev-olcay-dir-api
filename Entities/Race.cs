@@ -1,3 +1,5 @@
+using WebApi.Enums;
+
 namespace WebApi.Entities
 {
     public class Race
