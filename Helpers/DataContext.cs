@@ -9,10 +9,6 @@ namespace WebApi.Helpers
     public class DataContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<Item> Items { get; set; }
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<ItemTag> ItemTags { get; set; }
-
         public DbSet<Race> Races { get; set; }
         public DbSet<Pet> Pets { get; set; }
 
@@ -25,7 +21,7 @@ namespace WebApi.Helpers
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ItemTag>().HasKey(it => new { it.ItemId, it.TagId });
+            modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
 
             var allRaces = new List<Race> {
                 new Race { Id = 1, Name = "Abyssinian", PetType = PetType.Cat },
@@ -337,6 +333,20 @@ namespace WebApi.Helpers
 
             modelBuilder.Entity<Race>().HasData(allRaces);
 
+            var account = new Account()
+            {
+                Id = 1,
+                Email = "a@a.com",
+                FirstName = "Olcay",
+                LastName = "Bayram",
+                AcceptTerms = true,
+                Role = Role.Admin,
+                Verified = new DateTime(1950, 7, 23),
+                Created = new DateTime(1950, 7, 23)
+            };
+
+            modelBuilder.Entity<Account>().HasData(account);
+
             var pet = new Pet{
                 Id = Guid.Parse("102b566b-ba1f-404c-b2df-e2cde39ade09"),
                 Age = PetAge.Baby,
@@ -351,7 +361,8 @@ namespace WebApi.Helpers
                 PetType = PetType.Cat,
                 RaceId = 43,
                 Size = Size.Small,
-                Title = "Norveç orman melezi bebek"
+                Title = "Norveç orman melezi bebek",
+                PetStatus = PetStatus.Created
             };
 
             modelBuilder.Entity<Pet>().HasData(pet);

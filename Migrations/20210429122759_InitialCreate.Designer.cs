@@ -10,8 +10,8 @@ using WebApi.Helpers;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210427175410_Races")]
-    partial class Races
+    [Migration("20210429122759_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,41 @@ namespace WebApi.Migrations
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn)
                 .HasAnnotation("ProductVersion", "3.1.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            modelBuilder.Entity("CustomAutoHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Changed")
+                        .HasColumnType("character varying(2048)")
+                        .HasMaxLength(2048);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RowId")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("TableName")
+                        .IsRequired()
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomAutoHistory");
+                });
 
             modelBuilder.Entity("WebApi.Entities.Account", b =>
                 {
@@ -31,8 +66,14 @@ namespace WebApi.Migrations
                     b.Property<bool>("AcceptTerms")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset?>("Banned")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -46,82 +87,43 @@ namespace WebApi.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("PasswordReset")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset?>("PasswordReset")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ResetToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("ResetTokenExpires")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset?>("ResetTokenExpires")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset?>("Updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("VerificationToken")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Verified")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset?>("Verified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.ToTable("Accounts");
-                });
 
-            modelBuilder.Entity("WebApi.Entities.Item", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("character varying(1500)")
-                        .HasMaxLength(1500);
-
-                    b.Property<int>("ItemType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("WebApi.Entities.ItemTag", b =>
-                {
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LinkCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ItemId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("ItemTags");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AcceptTerms = true,
+                            Created = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            Email = "a@a.com",
+                            FirstName = "Olcay",
+                            LastName = "Bayram",
+                            Role = 0,
+                            Verified = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Pet", b =>
@@ -130,24 +132,24 @@ namespace WebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int?>("AdoptedById")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Age")
                         .HasColumnType("integer");
 
                     b.Property<int>("CityId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("CreatedById")
                         .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("character varying(1500)")
                         .HasMaxLength(1500);
-
-                    b.Property<bool>("FoundHome")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("FromWhere")
                         .HasColumnType("integer");
@@ -155,21 +157,18 @@ namespace WebApi.Migrations
                     b.Property<int>("Gender")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPublished")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
 
+                    b.Property<int>("PetStatus")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PetType")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset>("PublishDate")
+                    b.Property<DateTimeOffset?>("Published")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RaceId")
@@ -185,11 +184,33 @@ namespace WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AdoptedById");
+
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("RaceId");
 
                     b.ToTable("Pets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("102b566b-ba1f-404c-b2df-e2cde39ade09"),
+                            Age = 1,
+                            CityId = 34,
+                            Created = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            CreatedById = 1,
+                            Description = "Evde anne sütüyle büyüyen oyuncu",
+                            FromWhere = 3,
+                            Gender = 1,
+                            Name = "Mişa",
+                            PetStatus = 1,
+                            PetType = 1,
+                            Published = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            RaceId = 43,
+                            Size = 1,
+                            Title = "Norveç orman melezi bebek"
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Race", b =>
@@ -2042,22 +2063,6 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApi.Entities.Tag", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tags");
-                });
-
             modelBuilder.Entity("WebApi.Entities.Account", b =>
                 {
                     b.OwnsMany("WebApi.Entities.RefreshToken", "RefreshTokens", b1 =>
@@ -2070,20 +2075,20 @@ namespace WebApi.Migrations
                             b1.Property<int>("AccountId")
                                 .HasColumnType("integer");
 
-                            b1.Property<DateTime>("Created")
-                                .HasColumnType("timestamp without time zone");
+                            b1.Property<DateTimeOffset>("Created")
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("CreatedByIp")
                                 .HasColumnType("text");
 
-                            b1.Property<DateTime>("Expires")
-                                .HasColumnType("timestamp without time zone");
+                            b1.Property<DateTimeOffset>("Expires")
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("ReplacedByToken")
                                 .HasColumnType("text");
 
-                            b1.Property<DateTime?>("Revoked")
-                                .HasColumnType("timestamp without time zone");
+                            b1.Property<DateTimeOffset?>("Revoked")
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("RevokedByIp")
                                 .HasColumnType("text");
@@ -2102,32 +2107,12 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApi.Entities.Item", b =>
-                {
-                    b.HasOne("WebApi.Entities.Account", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApi.Entities.ItemTag", b =>
-                {
-                    b.HasOne("WebApi.Entities.Item", "Item")
-                        .WithMany("ItemTags")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApi.Entities.Tag", "Tag")
-                        .WithMany("ItemTags")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("WebApi.Entities.Pet", b =>
                 {
+                    b.HasOne("WebApi.Entities.Account", "AdoptedBy")
+                        .WithMany()
+                        .HasForeignKey("AdoptedById");
+
                     b.HasOne("WebApi.Entities.Account", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")

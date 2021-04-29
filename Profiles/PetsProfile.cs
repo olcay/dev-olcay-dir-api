@@ -14,8 +14,11 @@ namespace WebApi.Profiles
             var sizes = EnumService.GetSizes();
             var fromWhere = EnumService.GetFromWhere();
             var cities = EnumService.GetCities();
+            var statuses = EnumService.GetPetStatuses();
 
             CreateMap<Entities.Pet, Models.PetDto>()
+            .ForMember(destination => destination.PetStatusText,
+               opts => opts.MapFrom(source => petTypes.FirstOrDefault(e => e.Value == source.PetStatus.ToString()).Text))
             .ForMember(destination => destination.PetTypeText,
                opts => opts.MapFrom(source => petTypes.FirstOrDefault(e => e.Value == source.PetType.ToString()).Text))
             .ForMember(destination => destination.AgeText,
@@ -32,6 +35,8 @@ namespace WebApi.Profiles
                opts => opts.MapFrom(source => source.Race.Name));
 
             CreateMap<Entities.Pet, Models.PetFullDto>()
+            .ForMember(destination => destination.PetStatusText,
+               opts => opts.MapFrom(source => petTypes.FirstOrDefault(e => e.Value == source.PetStatus.ToString()).Text))
             .ForMember(destination => destination.PetType,
                opts => opts.MapFrom(source => petTypes.FirstOrDefault(e => e.Value == source.PetType.ToString())))
             .ForMember(destination => destination.Age,

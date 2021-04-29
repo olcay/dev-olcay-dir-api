@@ -16,6 +16,9 @@ namespace WebApi.Entities
         [Required]
         public PetType PetType { get; set; }
 
+        [Required]
+        public PetStatus PetStatus { get; set; }
+
         public PetAge Age { get; set; }
 
         public Gender Gender { get; set; }
@@ -39,30 +42,28 @@ namespace WebApi.Entities
         [Required]
         public int CityId { get; set; }
 
-        [Required]
-        public DateTimeOffset Created { get; set; }
-
         [ForeignKey("CreatedById")]
         public Account CreatedBy { get; set; }
 
         public int CreatedById { get; set; }
+
+        [Required]
+        public DateTimeOffset Created { get; set; }
 
         [ForeignKey("AdoptedById")]
         public Account AdoptedBy { get; set; }
 
         public int? AdoptedById { get; set; }
 
-        public DateTimeOffset? Adopted { get; set; }
-
         public DateTimeOffset? Published { get; set; }
+    }
 
-        public DateTimeOffset? Deleted { get; set; }
-
-        public bool IsAdopted => Adopted.HasValue;
-
-        public bool IsDeleted => Deleted.HasValue;
-
-        public bool IsPublished => Published.HasValue;
+    public enum PetStatus
+    {
+        Created = 1,
+        Published = 2,
+        Adopted = 3,
+        Deleted = 4
     }
 
     public enum PetType

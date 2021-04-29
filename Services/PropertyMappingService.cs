@@ -7,14 +7,6 @@ namespace WebApi.Services
 {
     public class PropertyMappingService : IPropertyMappingService
     {
-        private Dictionary<string, PropertyMappingValue> _itemPropertyMapping =
-          new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
-          {
-               { "Id", new PropertyMappingValue(new List<string>() { "Id" } ) },
-               { "Title", new PropertyMappingValue(new List<string>() { "Title" } )},
-               { "Description", new PropertyMappingValue(new List<string>() { "Description" }) }
-          };
-
         private Dictionary<string, PropertyMappingValue> _petPropertyMapping =
            new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
            {
@@ -26,7 +18,6 @@ namespace WebApi.Services
 
         public PropertyMappingService()
         {
-            _propertyMappings.Add(new PropertyMapping<ItemDto, Entities.Item>(_itemPropertyMapping));
             _propertyMappings.Add(new PropertyMapping<PetDto, Entities.Pet>(_petPropertyMapping));
         }
 

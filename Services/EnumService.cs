@@ -15,6 +15,16 @@ namespace WebApi.Services
             };
         }
 
+        public static IEnumerable<EnumDto> GetPetStatuses()
+        {
+            return new List<EnumDto>{
+                new EnumDto{ Value = PetStatus.Created.ToString(), Text = "Yayında Değil" },
+                new EnumDto{ Value = PetStatus.Published.ToString(), Text = "Yayınlandı" },
+                new EnumDto{ Value = PetStatus.Adopted.ToString(), Text = "Evlat Edinildi" },
+                new EnumDto{ Value = PetStatus.Deleted.ToString(), Text = "Silindi" }
+            };
+        }
+
         public static IEnumerable<EnumDto> GetGenders()
         {
             return new List<EnumDto>{

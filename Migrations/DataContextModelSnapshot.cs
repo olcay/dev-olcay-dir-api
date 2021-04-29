@@ -19,6 +19,41 @@ namespace WebApi.Migrations
                 .HasAnnotation("ProductVersion", "3.1.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("CustomAutoHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("AccountId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Changed")
+                        .HasColumnType("character varying(2048)")
+                        .HasMaxLength(2048);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RowId")
+                        .IsRequired()
+                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("TableName")
+                        .IsRequired()
+                        .HasColumnType("character varying(128)")
+                        .HasMaxLength(128);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomAutoHistory");
+                });
+
             modelBuilder.Entity("WebApi.Entities.Account", b =>
                 {
                     b.Property<int>("Id")
@@ -74,55 +109,19 @@ namespace WebApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Accounts");
-                });
 
-            modelBuilder.Entity("WebApi.Entities.Item", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("CreationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("character varying(1500)")
-                        .HasMaxLength(1500);
-
-                    b.Property<int>("ItemType")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("WebApi.Entities.ItemTag", b =>
-                {
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TagId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LinkCreated")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ItemId", "TagId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("ItemTags");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AcceptTerms = true,
+                            Created = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
+                            Email = "a@a.com",
+                            FirstName = "Olcay",
+                            LastName = "Bayram",
+                            Role = 0,
+                            Verified = new DateTimeOffset(new DateTime(1950, 7, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0))
+                        });
                 });
 
             modelBuilder.Entity("WebApi.Entities.Pet", b =>
@@ -130,9 +129,6 @@ namespace WebApi.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("Adopted")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("AdoptedById")
                         .HasColumnType("integer");
@@ -149,9 +145,6 @@ namespace WebApi.Migrations
                     b.Property<int>("CreatedById")
                         .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset?>("Deleted")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasColumnType("character varying(1500)")
                         .HasMaxLength(1500);
@@ -166,6 +159,9 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("character varying(100)")
                         .HasMaxLength(100);
+
+                    b.Property<int>("PetStatus")
+                        .HasColumnType("integer");
 
                     b.Property<int>("PetType")
                         .HasColumnType("integer");
@@ -206,6 +202,7 @@ namespace WebApi.Migrations
                             FromWhere = 3,
                             Gender = 1,
                             Name = "Mişa",
+                            PetStatus = 1,
                             PetType = 1,
                             Published = new DateTimeOffset(new DateTime(2021, 4, 26, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 2, 0, 0, 0)),
                             RaceId = 43,
@@ -2064,22 +2061,6 @@ namespace WebApi.Migrations
                         });
                 });
 
-            modelBuilder.Entity("WebApi.Entities.Tag", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tags");
-                });
-
             modelBuilder.Entity("WebApi.Entities.Account", b =>
                 {
                     b.OwnsMany("WebApi.Entities.RefreshToken", "RefreshTokens", b1 =>
@@ -2122,30 +2103,6 @@ namespace WebApi.Migrations
                             b1.WithOwner("Account")
                                 .HasForeignKey("AccountId");
                         });
-                });
-
-            modelBuilder.Entity("WebApi.Entities.Item", b =>
-                {
-                    b.HasOne("WebApi.Entities.Account", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApi.Entities.ItemTag", b =>
-                {
-                    b.HasOne("WebApi.Entities.Item", "Item")
-                        .WithMany("ItemTags")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApi.Entities.Tag", "Tag")
-                        .WithMany("ItemTags")
-                        .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebApi.Entities.Pet", b =>

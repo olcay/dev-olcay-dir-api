@@ -8,6 +8,8 @@ namespace WebApi.Models
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string PetStatusText { get; set; }
         
         public string PetTypeText { get; set; }
 
@@ -31,10 +33,6 @@ namespace WebApi.Models
         
         public AccountDto CreatedBy { get; set; }
 
-        public DateTimeOffset? Adopted { get; set; }
-
         public DateTimeOffset? Published { get; set; }
-
-        public DateTimeOffset? Deleted { get; set; }
     }
 }

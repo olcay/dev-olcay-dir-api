@@ -91,7 +91,7 @@ namespace WebApi.Controllers
             petEntity.Created = DateTimeOffset.UtcNow;
 
             _repository.AddPet(petEntity);
-            _repository.Save();
+            _repository.Save(Account.Id);
 
             var petEntityFromRepo = _repository.GetPet(petEntity.Id);
 
@@ -120,7 +120,7 @@ namespace WebApi.Controllers
 
             _mapper.Map(pet, petFromRepo);
             _repository.UpdatePet(petFromRepo);
-            _repository.Save();
+            _repository.Save(Account.Id);
 
             return NoContent();
         }
@@ -148,7 +148,7 @@ namespace WebApi.Controllers
 
             _repository.UpdatePet(petFromRepo);
 
-            _repository.Save();
+            _repository.Save(Account.Id);
 
             return NoContent();
         }
@@ -163,9 +163,10 @@ namespace WebApi.Controllers
                 return Unauthorized(new { message = "Unauthorized" });
 
             petFromRepo.Published = DateTimeOffset.UtcNow;
+            petFromRepo.PetStatus = PetStatus.Published;
 
             _repository.UpdatePet(petFromRepo);
-            _repository.Save();
+            _repository.Save(Account.Id);
 
             return NoContent();
         }
@@ -179,10 +180,10 @@ namespace WebApi.Controllers
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            petFromRepo.Deleted = DateTimeOffset.UtcNow;
+            petFromRepo.PetStatus = PetStatus.Deleted;
 
             _repository.UpdatePet(petFromRepo);
-            _repository.Save();
+            _repository.Save(Account.Id);
 
             return NoContent();
         }
