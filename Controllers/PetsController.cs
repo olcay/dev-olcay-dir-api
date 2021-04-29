@@ -102,14 +102,14 @@ namespace WebApi.Controllers
             return CreatedAtRoute("GetPet", new { petId = petEntity.Id }, resourceToReturn);
         }
 
-        [HttpOptions]
+        [HttpOptions(Name = "GetPetsOptions")]
         public IActionResult GetPetsOptions()
         {
             Response.Headers.Add("Allow", "GET,OPTIONS,POST");
             return Ok();
         }
 
-        [HttpPut("{petId}")]
+        [HttpPut("{petId}", Name = "UpdatePet")]
         [Authorize]
         public IActionResult UpdatePet(Guid petId, PetForUpdateDto pet)
         {
@@ -125,7 +125,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{petId}")]
+        [HttpPatch("{petId}", Name = "PartiallyUpdatePet")]
         [Authorize]
         public ActionResult PartiallyUpdatePet(Guid petId,
             JsonPatchDocument<PetForUpdateDto> patchDocument)
@@ -153,7 +153,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{petId}/publish")]
+        [HttpPatch("{petId}/publish", Name = "PublishPet")]
         [Authorize]
         public IActionResult PublishPet(Guid petId)
         {
@@ -170,7 +170,7 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{petId}")]
+        [HttpDelete("{petId}", Name = "DeletePet")]
         [Authorize]
         public IActionResult DeletePet(Guid petId)
         {

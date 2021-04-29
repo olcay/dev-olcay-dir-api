@@ -96,7 +96,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpGet]
+        [HttpGet(Name = "GetAccounts")]
         public ActionResult<IEnumerable<AccountResponse>> GetAll()
         {
             var accounts = _accountService.GetAll();
@@ -104,7 +104,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetAccountById")]
         public ActionResult<AccountResponse> GetById(int id)
         {
             // users can get their own account and admins can get any account
@@ -116,7 +116,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize(Role.Admin)]
-        [HttpPost]
+        [HttpPost(Name = "CreateAccount")]
         public ActionResult<AccountResponse> Create(CreateRequest model)
         {
             var account = _accountService.Create(model);
@@ -124,7 +124,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize]
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "UpdateAccount")]
         public ActionResult<AccountResponse> Update(int id, UpdateRequest model)
         {
             // users can update their own account and admins can update any account
@@ -140,7 +140,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "DeleteAccount")]
         public IActionResult Delete(int id)
         {
             // users can delete their own account and admins can delete any account

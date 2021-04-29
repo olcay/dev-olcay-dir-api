@@ -14,37 +14,37 @@ namespace WebApi.Controllers
     [Produces("application/json")]
     public class EnumsController : ControllerBase
     {
-        [HttpGet("petTypes")]
+        [HttpGet("petTypes", Name="GetPetTypes")]
         public ActionResult<IEnumerable<EnumDto>> GetPetTypes()
         {
             return Ok(EnumService.GetPetTypes());
         }
 
-        [HttpGet("genders")]
+        [HttpGet("genders", Name="GetGenders")]
         public ActionResult<IEnumerable<EnumDto>> GetGenders()
         {
             return Ok(EnumService.GetGenders());
         }
 
-        [HttpGet("ages")]
+        [HttpGet("ages", Name="GetAges")]
         public ActionResult<IEnumerable<EnumDto>> GetAges()
         {
             return Ok(EnumService.GetAges());
         }
 
-        [HttpGet("sizes")]
+        [HttpGet("sizes", Name="GetSizes")]
         public ActionResult<IEnumerable<EnumDto>> GetSizes()
         {
             return Ok(EnumService.GetSizes());
         }
 
-        [HttpGet("fromWhere")]
+        [HttpGet("fromWhere", Name="GetFromWhere")]
         public ActionResult<IEnumerable<EnumDto>> GetFromWhere()
         {
             return Ok(EnumService.GetFromWhere());
         }
 
-        [HttpGet("cities")]
+        [HttpGet("cities", Name="GetCities")]
         public ActionResult<IEnumerable<EnumDto>> GetCities()
         {
             return Ok(EnumService.GetCities());

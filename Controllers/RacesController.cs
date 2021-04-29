@@ -29,7 +29,7 @@ namespace WebApi.Controllers
                 throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet("{petTypeValue}")]
+        [HttpGet("{petTypeValue}", Name = "GetRacesForPetType")]
         public ActionResult<IEnumerable<RaceDto>> GetRacesForPetType(PetType petTypeValue)
         {
             var races = _repository.GetRaces(petTypeValue);
