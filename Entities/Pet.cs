@@ -38,7 +38,7 @@ namespace WebApi.Entities
         [ForeignKey("RaceId")]
         public Race Race { get; set; }
 
-        public int RaceId { get; set; }
+        public int? RaceId { get; set; }
 
         [Required]
         public int CityId { get; set; }

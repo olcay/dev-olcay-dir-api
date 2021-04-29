@@ -156,7 +156,7 @@ namespace WebApi.Migrations
                     b.Property<DateTimeOffset?>("Published")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("RaceId")
+                    b.Property<int?>("RaceId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Size")
@@ -2086,9 +2086,7 @@ namespace WebApi.Migrations
 
                     b.HasOne("WebApi.Entities.Race", "Race")
                         .WithMany()
-                        .HasForeignKey("RaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RaceId");
                 });
 #pragma warning restore 612, 618
         }

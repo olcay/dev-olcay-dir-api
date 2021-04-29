@@ -107,7 +107,7 @@ namespace WebApi.Migrations
                     FromWhere = table.Column<int>(nullable: false),
                     Title = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(maxLength: 1500, nullable: true),
-                    RaceId = table.Column<int>(nullable: false),
+                    RaceId = table.Column<int>(nullable: true),
                     CityId = table.Column<int>(nullable: false),
                     CreatedById = table.Column<int>(nullable: false),
                     Created = table.Column<DateTimeOffset>(nullable: false),
@@ -134,7 +134,7 @@ namespace WebApi.Migrations
                         column: x => x.RaceId,
                         principalTable: "Races",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
