@@ -29,5 +29,6 @@ namespace WebApi.Services
         Pet GetPet(Guid petId);
         void AddPet(Pet pet);
         void UpdatePet(Pet pet);
+        bool RaceExists(int raceId);
     }
 }

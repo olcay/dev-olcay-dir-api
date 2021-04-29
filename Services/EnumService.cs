@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using WebApi.Entities;
 using WebApi.Models;
 
@@ -54,6 +55,12 @@ namespace WebApi.Services
                 new EnumDto{ Value = FromWhere.Street.ToString(), Text = "Sokaktan" },
                 new EnumDto{ Value = FromWhere.Vet.ToString(), Text = "Veteriner Hekimden" }
             };
+        }
+
+        public static bool CityExists(int cityId)
+        {
+            string stringCityId = cityId.ToString();
+            return  GetCities().Any(a => a.Value == stringCityId);
         }
 
         public static IEnumerable<EnumDto> GetCities()

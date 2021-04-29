@@ -31,10 +31,10 @@ namespace WebApi.Models
         
         public AccountDto CreatedBy { get; set; }
 
-        public DateTimeOffset Adopted { get; set; }
+        public DateTimeOffset? Adopted { get; set; }
 
-        public DateTimeOffset Published { get; set; }
+        public DateTimeOffset? Published { get; set; }
 
-        public DateTimeOffset Deleted { get; set; }
+        public DateTimeOffset? Deleted { get; set; }
     }
 }

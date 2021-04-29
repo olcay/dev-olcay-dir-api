@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using WebApi.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace WebApi.Controllers
 {
@@ -82,14 +83,9 @@ namespace WebApi.Controllers
         [Consumes("application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[Authorize]
+        [Authorize]
         public ActionResult<PetFullDto> CreatePet(PetForCreationDto pet)
         {
-            if (!TryValidateModel(pet))
-            {
-                return ValidationProblem(ModelState);
-            }
-
             var petEntity = _mapper.Map<Pet>(pet);
             petEntity.CreatedById = Account.Id;
             petEntity.Created = DateTimeOffset.UtcNow;
@@ -97,9 +93,11 @@ namespace WebApi.Controllers
             _repository.AddPet(petEntity);
             _repository.Save();
 
-            var itemToReturn = _mapper.Map<PetFullDto>(petEntity);
+            var petEntityFromRepo = _repository.GetPet(petEntity.Id);
 
-            var resourceToReturn = itemToReturn.ShapeData(null);
+            var petToReturn = _mapper.Map<PetFullDto>(petEntityFromRepo);
+
+            var resourceToReturn = petToReturn.ShapeData(null);
 
             return CreatedAtRoute("GetPet", new { petId = petEntity.Id }, resourceToReturn);
         }
@@ -111,10 +109,76 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("{petId}", Name = "DeletePet")]
-        public ActionResult DeletePet(Guid petId)
+        [HttpPut("{petId}")]
+        [Authorize]
+        public IActionResult UpdatePet(Guid petId, PetForUpdateDto pet)
         {
             var petFromRepo = _repository.GetPet(petId);
+
+            if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            _mapper.Map(pet, petFromRepo);
+            _repository.UpdatePet(petFromRepo);
+            _repository.Save();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{petId}")]
+        [Authorize]
+        public ActionResult PartiallyUpdatePet(Guid petId,
+            JsonPatchDocument<PetForUpdateDto> patchDocument)
+        {
+            var petFromRepo = _repository.GetPet(petId);
+
+            if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+            
+            var itemToPatch = _mapper.Map<PetForUpdateDto>(petFromRepo);
+            // add validation
+            patchDocument.ApplyTo(itemToPatch, ModelState);
+
+            if (!TryValidateModel(itemToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            _mapper.Map(itemToPatch, petFromRepo);
+
+            _repository.UpdatePet(petFromRepo);
+
+            _repository.Save();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{petId}/publish")]
+        [Authorize]
+        public IActionResult PublishPet(Guid petId)
+        {
+            var petFromRepo = _repository.GetPet(petId);
+
+            if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            petFromRepo.Published = DateTimeOffset.UtcNow;
+
+            _repository.UpdatePet(petFromRepo);
+            _repository.Save();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{petId}")]
+        [Authorize]
+        public IActionResult DeletePet(Guid petId)
+        {
+            var petFromRepo = _repository.GetPet(petId);
+
+            if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
             petFromRepo.Deleted = DateTimeOffset.UtcNow;
 
             _repository.UpdatePet(petFromRepo);

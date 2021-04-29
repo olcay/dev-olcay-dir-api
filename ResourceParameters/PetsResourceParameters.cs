@@ -1,8 +1,12 @@
+using Newtonsoft.Json;
+using WebApi.Entities;
+
 namespace WebApi.ResourceParameters
 {
     public class PetsResourceParameters
     {
         const int maxPageSize = 20;
+
         public string SearchQuery { get; set; }
 
         public int CreatedById { get; set; }
@@ -20,18 +24,23 @@ namespace WebApi.ResourceParameters
         
         public string Fields { get; set; }
 
-        public int PetTypeId { get; set; }
+        [JsonProperty("PetTypeValue")]
+        public PetType? PetType { get; set; }
 
         public int CityId { get; set; }
 
         public int RaceId { get; set; }
 
-        public int AgeId { get; set; }
+        [JsonProperty("AgeValue")]
+        public PetAge Age { get; set; }
 
-        public int GenderId { get; set; }
+        [JsonProperty("GenderValue")]
+        public Gender Gender { get; set; }
 
-        public int SizeId { get; set; }
+        [JsonProperty("SizeValue")]
+        public Size Size { get; set; }
 
-        public int FromWhereId { get; set; }
+        [JsonProperty("FromWhereValue")]
+        public FromWhere FromWhere { get; set; }
     }
 }

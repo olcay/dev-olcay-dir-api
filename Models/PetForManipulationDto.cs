@@ -13,10 +13,6 @@ namespace WebApi.Models
         [MaxLength(100, ErrorMessage = "İsim 100 karakterden daha fazla olamaz.")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Pet türü seçilmedi.")]
-        [JsonProperty("PetTypeValue")]
-        public PetType PetType { get; set; }
-
         [Required(ErrorMessage = "Başlık boş bırakılamaz.")]
         [MaxLength(100, ErrorMessage = "Başlık 100 karakterden daha fazla olamaz.")]
         public string Title { get; set; }
@@ -36,9 +32,11 @@ namespace WebApi.Models
         [JsonProperty("FromWhereValue")]
         public FromWhere FromWhere { get; set; }
 
-        public int RaceId { get; set; }
+        [RaceMustBeExisting(ErrorMessage = "Bilinmeyen ırk.")]
+        public int? RaceId { get; set; }
 
         [Required(ErrorMessage = "Şehir seçilmeli.")]
+        [CityMustBeExisting(ErrorMessage = "Bilinmeyen şehir.")]
         public int CityId { get; set; }
 
     }

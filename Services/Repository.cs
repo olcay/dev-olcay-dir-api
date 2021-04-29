@@ -220,6 +220,11 @@ namespace WebApi.Services
                 .OrderBy(c => c.Name).ToList();
         }
 
+        public bool RaceExists(int raceId)
+        {
+            return _context.Races.Any(a => a.Id == raceId);
+        }
+
         public PagedList<Pet> GetPets(PetsResourceParameters resourceParameters)
         {
             if (resourceParameters == null)
@@ -231,16 +236,9 @@ namespace WebApi.Services
                                 .Include(c => c.Race)
                                 .Where(c => !c.Deleted.HasValue);
 
-            if (resourceParameters.PetTypeId > 0)
+            if (resourceParameters.PetType != null)
             {
-                if (!Enum.IsDefined(typeof(PetType), resourceParameters.PetTypeId))
-                {
-                    throw new AppException("Invalid pet type");
-                }
-
-                var petTypeEnum = (PetType)resourceParameters.PetTypeId;
-
-                collection = collection.Where(a => a.PetType == petTypeEnum);
+                collection = collection.Where(a => a.PetType == resourceParameters.PetType);
             }
 
             if (resourceParameters.CreatedById > 0)
@@ -258,52 +256,24 @@ namespace WebApi.Services
                 collection = collection.Where(a => a.RaceId == resourceParameters.RaceId);
             }
 
-            if (resourceParameters.AgeId > 0)
+            if (resourceParameters.Age != PetAge.None)
             {
-                if (!Enum.IsDefined(typeof(PetAge), resourceParameters.AgeId))
-                {
-                    throw new AppException("Invalid age id");
-                }
-
-                var enumAge = (PetAge)resourceParameters.AgeId;
-
-                collection = collection.Where(a => a.Age == enumAge);
+                collection = collection.Where(a => a.Age == resourceParameters.Age);
             }
 
-            if (resourceParameters.GenderId > 0)
+            if (resourceParameters.Gender != Gender.None)
             {
-                if (!Enum.IsDefined(typeof(Gender), resourceParameters.GenderId))
-                {
-                    throw new AppException("Invalid gender id");
-                }
-
-                var enumGender = (Gender)resourceParameters.GenderId;
-
-                collection = collection.Where(a => a.Gender == enumGender);
+                collection = collection.Where(a => a.Gender == resourceParameters.Gender);
             }
 
-            if (resourceParameters.SizeId > 0)
+            if (resourceParameters.Size != Size.None)
             {
-                if (!Enum.IsDefined(typeof(Size), resourceParameters.SizeId))
-                {
-                    throw new AppException("Invalid size id");
-                }
-
-                var enumSize = (Size)resourceParameters.SizeId;
-
-                collection = collection.Where(a => a.Size == enumSize);
+                collection = collection.Where(a => a.Size == resourceParameters.Size);
             }
 
-            if (resourceParameters.FromWhereId > 0)
+            if (resourceParameters.FromWhere != FromWhere.None)
             {
-                if (!Enum.IsDefined(typeof(FromWhere), resourceParameters.FromWhereId))
-                {
-                    throw new AppException("Invalid from where id");
-                }
-
-                var enumFromWhere = (FromWhere)resourceParameters.FromWhereId;
-
-                collection = collection.Where(a => a.FromWhere == enumFromWhere);
+                collection = collection.Where(a => a.FromWhere == resourceParameters.FromWhere);
             }
 
             if (!string.IsNullOrWhiteSpace(resourceParameters.SearchQuery))
