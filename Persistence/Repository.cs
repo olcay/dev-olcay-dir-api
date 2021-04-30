@@ -58,7 +58,7 @@ namespace WebApi.Persistence.Services
             return _context.Races.Any(a => a.Id == raceId);
         }
 
-        public PagedList<Pet> GetPets(PetsResourceParameters resourceParameters)
+        public PagedList<Pet> GetPets(PetsResourceParameters resourceParameters, Account account)
         {
             if (resourceParameters == null)
             {
@@ -69,9 +69,21 @@ namespace WebApi.Persistence.Services
                                 .Include(c => c.Race)
                                 .Include(c => c.CreatedBy) as IQueryable<Pet>;
 
-            if (resourceParameters.PetType.HasValue)
+            var isOnlyPublished = true;
+            if (account != null && (account.Role == Role.Admin || account.Id == resourceParameters.CreatedById))
             {
-                collection = collection.Where(a => a.PetType == resourceParameters.PetType.Value);
+                collection = collection.Where(a => a.PetStatus != PetStatus.Deleted);
+                isOnlyPublished = false;
+            }
+            
+            if (isOnlyPublished)
+            {
+                collection = collection.Where(a => a.PetStatus == PetStatus.Published);
+            }
+
+            if (resourceParameters.PetType != PetType.All)
+            {
+                collection = collection.Where(a => a.PetType == resourceParameters.PetType);
             }
 
             if (resourceParameters.CreatedById > 0)

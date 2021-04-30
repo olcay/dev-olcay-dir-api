@@ -10,6 +10,7 @@ using WebApi.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using WebApi.Persistence.Services;
+using WebApi.Enums;
 
 namespace WebApi.Controllers
 {
@@ -38,7 +39,6 @@ namespace WebApi.Controllers
         }
 
         [HttpGet(Name = "GetPets")]
-        [HttpHead]
         public ActionResult<CollectionResourceDto> GetPets(
             [FromQuery] PetsResourceParameters resourceParameters)
         {
@@ -52,7 +52,7 @@ namespace WebApi.Controllers
                 throw new AppException(nameof(resourceParameters.Fields));
             }
 
-            var itemsFromRepo = _repository.GetPets(resourceParameters);
+            var itemsFromRepo = _repository.GetPets(resourceParameters, Account);
 
             var paginationMetadata = new PaginationDto
             (
@@ -65,15 +65,18 @@ namespace WebApi.Controllers
             var shapedItems = _mapper.Map<IEnumerable<PetDto>>(itemsFromRepo)
                                     .ShapeData(resourceParameters.Fields);
 
-            var linkedCollectionResource = new CollectionResourceDto(shapedItems, paginationMetadata);
+            var collectionResource = new CollectionResourceDto(shapedItems, paginationMetadata);
 
-            return Ok(linkedCollectionResource);
+            return Ok(collectionResource);
         }
 
         [HttpGet("{petId}", Name = "GetPet")]
         public ActionResult<PetFullDto> GetPet(Guid petId)
         {
             var pet = _repository.GetPet(petId);
+
+            if (pet.PetStatus != PetStatus.Published && (pet.CreatedById != Account.Id || Account.Role != Role.Admin))
+                return Unauthorized(new { message = "Unauthorized" });
 
             var petDto = _mapper.Map<PetFullDto>(pet);
 

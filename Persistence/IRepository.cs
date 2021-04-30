@@ -15,7 +15,7 @@ namespace WebApi.Persistence.Services
 
         bool RaceExists(int raceId);
 
-        PagedList<Pet> GetPets(PetsResourceParameters resourceParameters);
+        PagedList<Pet> GetPets(PetsResourceParameters resourceParameters, Account account);
 
         Pet GetPet(Guid petId);
 

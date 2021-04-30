@@ -26,7 +26,7 @@ namespace WebApi.ResourceParameters
         public string Fields { get; set; }
 
         [JsonProperty("PetTypeValue")]
-        public PetType? PetType { get; set; }
+        public PetType PetType { get; set; }
 
         public int CityId { get; set; }
 
