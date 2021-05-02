@@ -299,6 +299,7 @@ namespace WebApi.Services
 
         private (RefreshToken, Account) getRefreshToken(string token)
         {
+            if (token == null) throw new AppException("Invalid token");
             var account = _context.Accounts.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
             if (account == null) throw new AppException("Invalid token");
             var refreshToken = account.RefreshTokens.Single(x => x.Token == token);

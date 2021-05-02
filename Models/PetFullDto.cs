@@ -10,7 +10,7 @@ namespace WebApi.Models
 
         public string Name { get; set; }
 
-        public string PetStatusText { get; set; }
+        public EnumDto<PetStatus> PetStatus { get; set; }
         
         public EnumDto<PetType> PetType { get; set; }
 

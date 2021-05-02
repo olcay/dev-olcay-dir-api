@@ -64,6 +64,11 @@ namespace WebApi.Entities
             PetStatus = PetStatus.Published;
         }
 
+        public void Unpublish()
+        {
+            PetStatus = PetStatus.Created;
+        }
+
         public void Create(int accountId)
         {
             CreatedById = accountId;

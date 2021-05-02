@@ -35,8 +35,8 @@ namespace WebApi.Profiles
                opts => opts.MapFrom(source => source.Race.Name));
 
             CreateMap<Entities.Pet, Models.PetFullDto>()
-            .ForMember(destination => destination.PetStatusText,
-               opts => opts.MapFrom(source => statuses.FirstOrDefault(e => e.Value == source.PetStatus).Text))
+            .ForMember(destination => destination.PetStatus,
+               opts => opts.MapFrom(source => statuses.FirstOrDefault(e => e.Value == source.PetStatus)))
             .ForMember(destination => destination.PetType,
                opts => opts.MapFrom(source => petTypes.FirstOrDefault(e => e.Value == source.PetType)))
             .ForMember(destination => destination.Age,

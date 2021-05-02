@@ -14,11 +14,13 @@ ASP.NET Core 3.1 - API with Email Sign Up, Verification, Authentication & Forgot
 
 1. Download or clone the project code.
 
-2. Configure SMTP settings for email within the AppSettings section in the `.vscode/launch.json` file. For testing you can create a free account in one click at <https://ethereal.email/> and copy the options below the title SMTP configuration.
+1. Configure the database connection string in the `.vscode/launch.json` file. For testing you can create a free postgresql database on heroku and copy the `DATABASE_URL` to the file.
 
-3. Start the api with `F5`, you should see the message Now listening on: <http://localhost:5000>, and you can view the Swagger API documentation at <http://localhost:5000/swagger>.
+1. Configure SMTP settings for email in the `.vscode/launch.json` file. For testing you can create a free account in one click at <https://ethereal.email/> and copy the options below the title SMTP configuration.
 
-4. Test with Swagger or hook up with an example Angular or React application. If you use Swagger, you need to copy JWT to Authorization value.
+1. Start the api with `F5`, you should see the message Now listening on: <http://localhost:5000>, and you can view the Swagger API documentation at <http://localhost:5000/swagger>.
+
+1. Test with Swagger or hook up with an example Angular or React application. If you use Swagger, you need to copy JWT to Authorization value.
 
 ### Before running in production
 

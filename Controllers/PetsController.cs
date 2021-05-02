@@ -173,6 +173,23 @@ namespace WebApi.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{petId}/unpublish", Name = "UnpublishPet")]
+        [Authorize]
+        public IActionResult UnpublishPet(Guid petId)
+        {
+            var petFromRepo = _repository.GetPet(petId);
+
+            if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            petFromRepo.Unpublish();
+
+            _repository.UpdatePet(petFromRepo);
+            _repository.Save(Account.Id);
+
+            return NoContent();
+        }
+
         [HttpDelete("{petId}", Name = "DeletePet")]
         [Authorize]
         public IActionResult DeletePet(Guid petId)
