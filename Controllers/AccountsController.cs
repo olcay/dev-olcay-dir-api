@@ -103,15 +103,21 @@ namespace WebApi.Controllers
             return Ok(accounts);
         }
 
-        [Authorize]
         [HttpGet("{id:int}", Name = "GetAccountById")]
         public ActionResult<AccountResponse> GetById(int id)
         {
-            // users can get their own account and admins can get any account
-            if (id != Account.Id && Account.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
-
             var account = _accountService.GetById(id);
+
+            // account info is limited for public access
+            if (Account == null || !(id == Account.Id || Account.Role == Role.Admin))
+            {
+                var limitedAccount = new AccountResponse(){
+                    DisplayName = account.DisplayName,
+                    Id = account.Id
+                };
+                account = limitedAccount;
+            }
+
             return Ok(account);
         }
 
