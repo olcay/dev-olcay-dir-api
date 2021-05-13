@@ -75,7 +75,7 @@ namespace WebApi.Services
 
         public static IEnumerable<EnumDto> GetCities()
         {
-            return new List<EnumDto>{
+            var cities = new List<EnumDto>{
                 new EnumDto{ Value = "1", Text = "Adana" },
                 new EnumDto{ Value = "2", Text = "Adıyaman" },
                 new EnumDto{ Value = "3", Text = "Afyonkarahisar" },
@@ -158,6 +158,8 @@ namespace WebApi.Services
                 new EnumDto{ Value = "80", Text = "Osmaniye" },
                 new EnumDto{ Value = "81", Text = "Düzce" }
             };
+
+            return cities.OrderBy(c => c.Text);
         }
     }
 }
