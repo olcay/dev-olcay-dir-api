@@ -22,5 +22,10 @@ namespace WebApi.Persistence.Services
         void AddPet(Pet pet);
 
         void UpdatePet(Pet pet);
+
+        void AddImage(Image image);
+        
+        void DeleteImage(Image image);
+        Image GetImage(Guid imageId);
     }
 }

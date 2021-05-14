@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WebApi.Enums;
@@ -57,6 +58,8 @@ namespace WebApi.Entities
         public int? AdoptedById { get; set; }
 
         public DateTimeOffset? Published { get; set; }
+
+        public ICollection<Image> Images { get; set; }
 
         public void Publish()
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using WebApi.Enums;
 using WebApi.Models.Accounts;
 
@@ -35,5 +36,7 @@ namespace WebApi.Models
         public AccountDto CreatedBy { get; set; }
 
         public DateTimeOffset? Published { get; set; }
+
+        public ICollection<ImageDto> Images { get; set; }
     }
 }

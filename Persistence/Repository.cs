@@ -152,6 +152,7 @@ namespace WebApi.Persistence.Services
             var pet = _context.Pets
                             .Include(p => p.Race)
                             .Include(p => p.CreatedBy)
+                            .Include(p => p.Images)
                             .SingleOrDefault(a => a.Id == petId);
 
             if (pet == null)
@@ -177,7 +178,50 @@ namespace WebApi.Persistence.Services
 
         public void UpdatePet(Pet pet)
         {
+            if (pet == null)
+            {
+                throw new AppException(nameof(pet));
+            }
+            
             _context.Pets.Update(pet);
+        }
+
+        public void AddImage(Image image)
+        {
+            if (image == null)
+            {
+                throw new AppException(nameof(image));
+            }
+
+            _context.Images.Add(image);
+        }
+
+        public Image GetImage(Guid imageId)
+        {
+            if (imageId == Guid.Empty)
+            {
+                throw new AppException(nameof(imageId));
+            }
+
+            var image = _context.Images
+                            .SingleOrDefault(a => a.Id == imageId);
+
+            if (image == null)
+            {
+                throw new KeyNotFoundException("Pet not found");
+            }
+
+            return image;
+        }
+
+        public void DeleteImage(Image image)
+        {
+            if (image == null)
+            {
+                throw new AppException(nameof(image));
+            }
+
+            _context.Images.Remove(image);
         }
     }
 }

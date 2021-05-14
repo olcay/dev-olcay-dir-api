@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WebApi.Persistence;
 using WebApi.Persistence.Services;
+using WebApi.Models;
 
 namespace WebApi
 {
@@ -130,6 +131,7 @@ namespace WebApi
 
             // configure strongly typed settings object
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
 
             // configure DI for application services
             services.AddScoped<IRepository, Repository>();

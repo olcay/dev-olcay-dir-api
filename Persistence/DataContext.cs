@@ -12,6 +12,7 @@ namespace WebApi.Persistence
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Race> Races { get; set; }
         public DbSet<Pet> Pets { get; set; }
+        public DbSet<Image> Images { get; set; }
 
         private readonly IConfiguration Configuration;
 
