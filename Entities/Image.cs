@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace WebApi.Entities
 {
@@ -18,13 +19,18 @@ namespace WebApi.Entities
         [Required]
         public DateTimeOffset Created { get; set; }
 
-        public void Create(Guid petId)
+        [Required]
+        [StringLength(4)]
+        public string FileExtension { get; set; }
+
+        public void Create(Guid petId, string fileName)
         {
             Id = Guid.NewGuid();
             PetId = petId;
             Created = DateTimeOffset.UtcNow;
+            FileExtension = fileName.Split(".").Last();
         }
 
-        public string FileName() => string.Concat(PetId, "/", Id, ".image");
+        public string FileName() => string.Concat(PetId, "/", Id, ".", FileExtension);
     }
 }

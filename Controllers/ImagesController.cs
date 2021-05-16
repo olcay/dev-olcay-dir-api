@@ -65,11 +65,12 @@ namespace WebApi.Controllers
                         using (Stream stream = formFile.OpenReadStream())
                         {
                             var image = new Image();
-                            image.Create(pet.Id);
-                            
+                            image.Create(pet.Id, formFile.FileName);
+
                             isUploaded = await StorageHelper.UploadFileToStorage(stream, image.FileName(), storageConfig);
 
-                            if (isUploaded){
+                            if (isUploaded)
+                            {
                                 _repository.AddImage(image);
                             }
                         }
@@ -92,17 +93,22 @@ namespace WebApi.Controllers
 
         [HttpDelete("{imageId}", Name = "DeleteImage")]
         [Authorize]
-        public IActionResult DeleteImage(Guid petId, Guid imageId)
+        public async Task<IActionResult> DeleteImage(Guid petId, Guid imageId)
         {
             var petFromRepo = _repository.GetPet(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var imageFromRepo = _repository.GetImage(imageId);
+            var image = _repository.GetImage(imageId);
 
-            _repository.DeleteImage(imageFromRepo);
-            _repository.Save(Account.Id);
+            var isDeleted = await StorageHelper.DeleteFileFromStorage(image.FileName(), storageConfig);
+
+            if (isDeleted)
+            {
+                _repository.DeleteImage(image);
+                _repository.Save(Account.Id);
+            }
 
             return NoContent();
         }
