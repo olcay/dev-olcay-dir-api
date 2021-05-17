@@ -143,6 +143,7 @@ namespace WebApi
             services.AddScoped<IPetRepository, PetRepository>();
             services.AddScoped<IRaceRepository, RaceRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
         }
 
         // configure the HTTP request pipeline

@@ -8,6 +8,7 @@ namespace WebApi.Persistence
         IRaceRepository Races { get; }
         IImageRepository Images { get; }
         IAccountRepository Accounts { get; }
+        IMessageRepository Messages { get; }
 
         bool Complete(int? accountId);
         bool Complete();

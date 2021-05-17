@@ -15,6 +15,8 @@ namespace WebApi.Persistence
 
         public IAccountRepository Accounts { get; }
 
+        public IMessageRepository Messages { get; }
+
         public UnitOfWork(DataContext context,
             IPetRepository petRepository,
             IRaceRepository races,
