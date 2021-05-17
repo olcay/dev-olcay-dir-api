@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Persistence;
 
-namespace WebApi.Migrations
+namespace WebApi.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210516182603_FileExtensionForImage")]
-    partial class FileExtensionForImage
+    [Migration("20210514162839_Image")]
+    partial class Image
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -121,11 +121,6 @@ namespace WebApi.Migrations
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FileExtension")
-                        .IsRequired()
-                        .HasColumnType("character varying(4)")
-                        .HasMaxLength(4);
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("uuid");

@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.Services;
 using WebApi.Enums;
 
-namespace WebApi.Persistence.Services
+namespace WebApi.Persistence.Repositories
 {
-    public class Repository : IRepository, IDisposable
+    public class PetRepository : IPetRepository
     {
         private readonly DataContext _context;
         private readonly IPropertyMappingService _propertyMappingService;
 
-        public Repository(DataContext context,
+        public PetRepository(DataContext context,
             IPropertyMappingService propertyMappingService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -23,42 +23,7 @@ namespace WebApi.Persistence.Services
                 throw new ArgumentNullException(nameof(propertyMappingService));
         }
 
-        public bool Save(int? accountId)
-        {
-            _context.EnsureAutoHistory(() => new CustomAutoHistory()
-            {
-                AccountId = accountId
-            });
-            return (_context.SaveChanges() >= 0);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // dispose resources when needed
-            }
-        }
-
-        public IEnumerable<Race> GetRaces(PetType petType)
-        {
-            return _context.Races
-                .Where(c => c.PetType == petType)
-                .OrderBy(c => c.Name).ToList();
-        }
-
-        public bool RaceExists(int raceId)
-        {
-            return _context.Races.Any(a => a.Id == raceId);
-        }
-
-        public PagedList<Pet> GetPets(PetsResourceParameters resourceParameters, Account account)
+        public PagedList<Pet> Get(PetsResourceParameters resourceParameters, Account account)
         {
             if (resourceParameters == null)
             {
@@ -67,6 +32,7 @@ namespace WebApi.Persistence.Services
 
             var collection = _context.Pets
                                 .Include(c => c.Race)
+                                .Include(p => p.Images)
                                 .Include(c => c.CreatedBy) as IQueryable<Pet>;
 
             var isOnlyPublished = true;
@@ -142,7 +108,7 @@ namespace WebApi.Persistence.Services
                 resourceParameters.PageSize);
         }
 
-        public Pet GetPet(Guid petId)
+        public Pet Get(Guid petId)
         {
             if (petId == Guid.Empty)
             {
@@ -163,7 +129,7 @@ namespace WebApi.Persistence.Services
             return pet;
         }
 
-        public void AddPet(Pet pet)
+        public void Add(Pet pet)
         {
             if (pet == null)
             {
@@ -176,7 +142,7 @@ namespace WebApi.Persistence.Services
             _context.Pets.Add(pet);
         }
 
-        public void UpdatePet(Pet pet)
+        public void Update(Pet pet)
         {
             if (pet == null)
             {
@@ -184,44 +150,6 @@ namespace WebApi.Persistence.Services
             }
             
             _context.Pets.Update(pet);
-        }
-
-        public void AddImage(Image image)
-        {
-            if (image == null)
-            {
-                throw new AppException(nameof(image));
-            }
-
-            _context.Images.Add(image);
-        }
-
-        public Image GetImage(Guid imageId)
-        {
-            if (imageId == Guid.Empty)
-            {
-                throw new AppException(nameof(imageId));
-            }
-
-            var image = _context.Images
-                            .SingleOrDefault(a => a.Id == imageId);
-
-            if (image == null)
-            {
-                throw new KeyNotFoundException("Pet not found");
-            }
-
-            return image;
-        }
-
-        public void DeleteImage(Image image)
-        {
-            if (image == null)
-            {
-                throw new AppException(nameof(image));
-            }
-
-            _context.Images.Remove(image);
         }
     }
 }

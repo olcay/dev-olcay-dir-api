@@ -2,18 +2,16 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Persistence;
 
-namespace WebApi.Migrations
+namespace WebApi.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210514162839_Image")]
-    partial class Image
+    partial class DataContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,6 +119,11 @@ namespace WebApi.Migrations
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileExtension")
+                        .IsRequired()
+                        .HasColumnType("character varying(4)")
+                        .HasMaxLength(4);
 
                     b.Property<Guid>("PetId")
                         .HasColumnType("uuid");

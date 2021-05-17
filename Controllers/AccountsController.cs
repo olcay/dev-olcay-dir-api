@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using WebApi.Entities;
 using WebApi.Models.Accounts;
 using WebApi.Services;
@@ -104,9 +105,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetAccountById")]
-        public ActionResult<AccountResponse> GetById(int id)
+        public async Task<ActionResult<AccountResponse>> GetById(int id)
         {
-            var account = _accountService.GetById(id);
+            var account = await _accountService.GetById(id);
 
             // account info is limited for public access
             if (Account == null || !(id == Account.Id || Account.Role == Role.Admin))
@@ -131,7 +132,7 @@ namespace WebApi.Controllers
 
         [Authorize]
         [HttpPut("{id:int}", Name = "UpdateAccount")]
-        public ActionResult<AccountResponse> Update(int id, UpdateRequest model)
+        public async Task<ActionResult<AccountResponse>> Update(int id, UpdateRequest model)
         {
             // users can update their own account and admins can update any account
             if (id != Account.Id && Account.Role != Role.Admin)
@@ -141,19 +142,19 @@ namespace WebApi.Controllers
             if (Account.Role != Role.Admin)
                 model.Role = null;
 
-            var account = _accountService.Update(id, model, Request.Headers["origin"]);
+            var account = await _accountService.Update(id, model, Request.Headers["origin"]);
             return Ok(account);
         }
 
         [Authorize]
         [HttpDelete("{id:int}", Name = "DeleteAccount")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             // users can delete their own account and admins can delete any account
             if (id != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            _accountService.Delete(id);
+            await _accountService.Delete(id);
             return Ok(new { message = "Account deleted successfully" });
         }
 

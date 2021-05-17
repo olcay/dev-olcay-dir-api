@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.Persistence;
 
-namespace WebApi.Migrations
+namespace WebApi.Persistence.Migrations
 {
     [DbContext(typeof(DataContext))]
     [Migration("20210429211613_InitialCreate")]

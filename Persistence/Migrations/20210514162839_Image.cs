@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebApi.Migrations
+namespace WebApi.Persistence.Migrations
 {
     public partial class Image : Migration
     {

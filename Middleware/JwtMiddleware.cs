@@ -22,17 +22,17 @@ namespace WebApi.Middleware
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, DataContext dataContext)
+        public async Task Invoke(HttpContext context, IUnitOfWork unitOfWork)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                await attachAccountToContext(context, dataContext, token);
+                await attachAccountToContext(context, unitOfWork, token);
 
             await _next(context);
         }
 
-        private async Task attachAccountToContext(HttpContext context, DataContext dataContext, string token)
+        private async Task attachAccountToContext(HttpContext context, IUnitOfWork unitOfWork, string token)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace WebApi.Middleware
                 var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // attach account to context on successful jwt validation
-                context.Items["Account"] = await dataContext.Accounts.FindAsync(accountId);
+                context.Items["Account"] = await unitOfWork.Accounts.GetById(accountId);
             }
             catch 
             {

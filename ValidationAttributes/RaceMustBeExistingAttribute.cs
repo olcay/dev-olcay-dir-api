@@ -1,6 +1,7 @@
 ﻿using WebApi.Models;
 using System.ComponentModel.DataAnnotations;
-using WebApi.Persistence.Services;
+using WebApi.Persistence.Repositories;
+using WebApi.Persistence;
 
 namespace WebApi.ValidationAttributes
 {
@@ -11,10 +12,10 @@ namespace WebApi.ValidationAttributes
         {
             var raceId = value as int?;
 
-            var repository = (IRepository)validationContext
-                        .GetService(typeof(IRepository));
+            var unitOfWork = (IUnitOfWork)validationContext
+                        .GetService(typeof(IUnitOfWork));
 
-            if (raceId.HasValue && !repository.RaceExists(raceId.Value))
+            if (raceId.HasValue && !unitOfWork.Races.Exists(raceId.Value))
             {
                 return new ValidationResult(ErrorMessage, new[] { nameof(PetForManipulationDto.RaceId) });
             }

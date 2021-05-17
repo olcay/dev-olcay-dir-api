@@ -16,7 +16,7 @@ using WebApi.Middleware;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using WebApi.Persistence;
-using WebApi.Persistence.Services;
+using WebApi.Persistence.Repositories;
 using WebApi.Models;
 
 namespace WebApi
@@ -134,9 +134,15 @@ namespace WebApi
             services.Configure<AzureStorageConfig>(Configuration.GetSection("AzureStorageConfig"));
 
             // configure DI for application services
-            services.AddScoped<IRepository, Repository>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailService, EmailService>();
+
+            //Persistence
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAccountRepository, AccountRepository>();
+            services.AddScoped<IPetRepository, PetRepository>();
+            services.AddScoped<IRaceRepository, RaceRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
         }
 
         // configure the HTTP request pipeline

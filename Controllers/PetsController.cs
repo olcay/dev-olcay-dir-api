@@ -9,8 +9,8 @@ using System.Collections.Generic;
 using WebApi.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
-using WebApi.Persistence.Services;
 using WebApi.Enums;
+using WebApi.Persistence;
 
 namespace WebApi.Controllers
 {
@@ -19,17 +19,17 @@ namespace WebApi.Controllers
     [Produces("application/json")]
     public class PetsController : BaseController
     {
-        private readonly IRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IPropertyCheckerService _propertyCheckerService;
 
-        public PetsController(IRepository repository,
+        public PetsController(
             IMapper mapper, IPropertyMappingService propertyMappingService,
-            IPropertyCheckerService propertyCheckerService)
+            IPropertyCheckerService propertyCheckerService, IUnitOfWork unitOfWork)
         {
-            _repository = repository ??
-                throw new ArgumentNullException(nameof(repository));
+            _unitOfWork = unitOfWork ??
+                throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
             _propertyMappingService = propertyMappingService ??
@@ -52,7 +52,7 @@ namespace WebApi.Controllers
                 throw new AppException(nameof(resourceParameters.Fields));
             }
 
-            var itemsFromRepo = _repository.GetPets(resourceParameters, Account);
+            var itemsFromRepo = _unitOfWork.Pets.Get(resourceParameters, Account);
 
             var paginationMetadata = new PaginationDto
             (
@@ -73,7 +73,7 @@ namespace WebApi.Controllers
         [HttpGet("{petId}", Name = "GetPet")]
         public ActionResult<PetFullDto> GetPet(Guid petId)
         {
-            var pet = _repository.GetPet(petId);
+            var pet = _unitOfWork.Pets.Get(petId);
 
             if (pet.PetStatus != PetStatus.Published && (pet.CreatedById != Account.Id || Account.Role != Role.Admin))
                 return Unauthorized(new { message = "Unauthorized" });
@@ -93,10 +93,10 @@ namespace WebApi.Controllers
             var petEntity = _mapper.Map<Pet>(pet);
             petEntity.Create(Account.Id);
 
-            _repository.AddPet(petEntity);
-            _repository.Save(Account.Id);
+            _unitOfWork.Pets.Add(petEntity);
+            _unitOfWork.Complete(Account.Id);
 
-            var petEntityFromRepo = _repository.GetPet(petEntity.Id);
+            var petEntityFromRepo = _unitOfWork.Pets.Get(petEntity.Id);
 
             var petToReturn = _mapper.Map<PetFullDto>(petEntityFromRepo);
 
@@ -116,14 +116,14 @@ namespace WebApi.Controllers
         [Authorize]
         public IActionResult UpdatePet(Guid petId, PetForUpdateDto pet)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             _mapper.Map(pet, petFromRepo);
-            _repository.UpdatePet(petFromRepo);
-            _repository.Save(Account.Id);
+            _unitOfWork.Pets.Update(petFromRepo);
+            _unitOfWork.Complete(Account.Id);
 
             return NoContent();
         }
@@ -133,7 +133,7 @@ namespace WebApi.Controllers
         public ActionResult PartiallyUpdatePet(Guid petId,
             JsonPatchDocument<PetForUpdateDto> patchDocument)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
@@ -149,9 +149,9 @@ namespace WebApi.Controllers
 
             _mapper.Map(itemToPatch, petFromRepo);
 
-            _repository.UpdatePet(petFromRepo);
+            _unitOfWork.Pets.Update(petFromRepo);
 
-            _repository.Save(Account.Id);
+            _unitOfWork.Complete(Account.Id);
 
             return NoContent();
         }
@@ -160,15 +160,15 @@ namespace WebApi.Controllers
         [Authorize]
         public IActionResult PublishPet(Guid petId)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             petFromRepo.Publish();
 
-            _repository.UpdatePet(petFromRepo);
-            _repository.Save(Account.Id);
+            _unitOfWork.Pets.Update(petFromRepo);
+            _unitOfWork.Complete(Account.Id);
 
             return NoContent();
         }
@@ -177,15 +177,15 @@ namespace WebApi.Controllers
         [Authorize]
         public IActionResult UnpublishPet(Guid petId)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             petFromRepo.Unpublish();
 
-            _repository.UpdatePet(petFromRepo);
-            _repository.Save(Account.Id);
+            _unitOfWork.Pets.Update(petFromRepo);
+            _unitOfWork.Complete(Account.Id);
 
             return NoContent();
         }
@@ -194,15 +194,15 @@ namespace WebApi.Controllers
         [Authorize]
         public IActionResult DeletePet(Guid petId)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
             petFromRepo.Delete();
 
-            _repository.UpdatePet(petFromRepo);
-            _repository.Save(Account.Id);
+            _unitOfWork.Pets.Update(petFromRepo);
+            _unitOfWork.Complete(Account.Id);
 
             return NoContent();
         }

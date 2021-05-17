@@ -4,8 +4,8 @@ using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using WebApi.Persistence.Services;
 using WebApi.Enums;
+using WebApi.Persistence;
 
 namespace WebApi.Controllers
 {
@@ -17,14 +17,14 @@ namespace WebApi.Controllers
     [Produces("application/json")]
     public class RacesController : ControllerBase
     {
-        private readonly IRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public RacesController(IRepository repository,
+        public RacesController(IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _repository = repository ??
-                throw new ArgumentNullException(nameof(repository));
+            _unitOfWork = unitOfWork ??
+                throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
         }
@@ -32,7 +32,7 @@ namespace WebApi.Controllers
         [HttpGet("{petTypeValue}", Name = "GetRacesForPetType")]
         public ActionResult<IEnumerable<RaceDto>> GetRacesForPetType(PetType petTypeValue)
         {
-            var races = _repository.GetRaces(petTypeValue);
+            var races = _unitOfWork.Races.Get(petTypeValue);
             return Ok(_mapper.Map<IEnumerable<RaceDto>>(races));
         }
     }

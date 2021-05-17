@@ -1,16 +1,14 @@
-using AutoMapper;
 using WebApi.Helpers;
 using WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using WebApi.Entities;
 using Microsoft.AspNetCore.Http;
-using WebApi.Persistence.Services;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using WebApi.Enums;
+using WebApi.Persistence;
 
 namespace WebApi.Controllers
 {
@@ -19,16 +17,13 @@ namespace WebApi.Controllers
     [Produces("application/json")]
     public class ImagesController : BaseController
     {
-        private readonly IRepository _repository;
-        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly AzureStorageConfig storageConfig = null;
 
-        public ImagesController(IRepository repository, IMapper mapper, IOptions<AzureStorageConfig> config)
+        public ImagesController(IUnitOfWork unitOfWork, IOptions<AzureStorageConfig> config)
         {
-            _repository = repository ??
-                throw new ArgumentNullException(nameof(repository));
-            _mapper = mapper ??
-                throw new ArgumentNullException(nameof(mapper));
+            _unitOfWork = unitOfWork ??
+                throw new ArgumentNullException(nameof(unitOfWork));
 
             storageConfig = config.Value;
         }
@@ -40,7 +35,7 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> AddImageAsync(Guid petId, ICollection<IFormFile> files)
         {
-            var pet = _repository.GetPet(petId);
+            var pet = _unitOfWork.Pets.Get(petId);
 
             if (pet.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
@@ -71,7 +66,7 @@ namespace WebApi.Controllers
 
                             if (isUploaded)
                             {
-                                _repository.AddImage(image);
+                                _unitOfWork.Images.Add(image);
                             }
                         }
                     }
@@ -84,7 +79,7 @@ namespace WebApi.Controllers
 
             if (isUploaded)
             {
-                _repository.Save(Account.Id);
+                _unitOfWork.Complete(Account.Id);
                 return new AcceptedResult();
             }
             else
@@ -95,19 +90,19 @@ namespace WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteImage(Guid petId, Guid imageId)
         {
-            var petFromRepo = _repository.GetPet(petId);
+            var petFromRepo = _unitOfWork.Pets.Get(petId);
 
             if (petFromRepo.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var image = _repository.GetImage(imageId);
+            var image = _unitOfWork.Images.Get(imageId);
 
             var isDeleted = await StorageHelper.DeleteFileFromStorage(image.FileName(), storageConfig);
 
             if (isDeleted)
             {
-                _repository.DeleteImage(image);
-                _repository.Save(Account.Id);
+                _unitOfWork.Images.Delete(image);
+                _unitOfWork.Complete(Account.Id);
             }
 
             return NoContent();
