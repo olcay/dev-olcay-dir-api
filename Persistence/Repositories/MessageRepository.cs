@@ -46,7 +46,7 @@ namespace WebApi.Persistence.Repositories
             }
 
             return _context.MessageBoxes
-                    .SingleOrDefault(a => a.Id == messageBoxId && a.IsDeleted == false);
+                    .SingleOrDefault(a => a.Id == messageBoxId);
         }
 
         public MessageBox GetBox(Guid petId, Guid messageBoxId, int accountId)
@@ -55,8 +55,7 @@ namespace WebApi.Persistence.Repositories
                     .Include(b => b.MessageBoxParticipants)
                     .SingleOrDefault(a => a.Id == messageBoxId 
                     && a.PetId == petId 
-                    && a.IsDeleted == false 
-                    && a.MessageBoxParticipants.Any(p => p.AccountId == accountId));
+                    && a.MessageBoxParticipants.Any(p => p.AccountId == accountId && p.IsDeleted == false));
         }
 
         public MessageBox GetBox(Guid petId, int createdById)
@@ -85,7 +84,7 @@ namespace WebApi.Persistence.Repositories
             return _context.MessageBoxParticipants
                     .Include(p => p.MessageBox)
                     .Include(p => p.MessageBox.Pet)
-                    .Where(p => p.MessageBox.IsDeleted == false && p.AccountId == accountId)
+                    .Where(p => p.IsDeleted == false && p.AccountId == accountId)
                     .OrderByDescending(p => p.MessageBox.Updated)
                     .ToList();
         }
@@ -114,8 +113,7 @@ namespace WebApi.Persistence.Repositories
             return _context.MessageBoxParticipants
                     .Include(a => a.MessageBox)
                     .Count(a =>
-                    a.AccountId == accountId
-                    && a.MessageBox.IsDeleted == false 
+                    a.AccountId == accountId && a.IsDeleted == false 
                     && a.Read < a.MessageBox.Updated);
         }
 
@@ -159,6 +157,16 @@ namespace WebApi.Persistence.Repositories
             _context.Messages.Update(message);
         }
 
+        public void Update(MessageBoxParticipant participant)
+        {
+            if (participant == null)
+            {
+                throw new AppException(nameof(participant));
+            }
+
+            _context.MessageBoxParticipants.Update(participant);
+        }
+
         public void Add(Message message)
         {
             if (message == null)
@@ -167,16 +175,6 @@ namespace WebApi.Persistence.Repositories
             }
 
             _context.Messages.Add(message);
-        }
-
-        public void Delete(Message message)
-        {
-            if (message == null)
-            {
-                throw new AppException(nameof(message));
-            }
-
-            _context.Messages.Remove(message);
         }
     }
 }

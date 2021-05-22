@@ -10,7 +10,6 @@ namespace WebApi.Persistence.Repositories
         void Add(Message message);
         void Add(MessageBoxParticipant accountMessageBox);
         int CountUnreadMessages(int accountId);
-        void Delete(Message message);
         Message Get(Guid messageId);
         MessageBox GetBox(Guid petId, int createdById);
         MessageBox GetBox(Guid messageBoxId);
@@ -20,5 +19,6 @@ namespace WebApi.Persistence.Repositories
         IEnumerable<Message> GetMessages(Guid messageBoxId);
         void Update(MessageBox messageBox);
         void Update(Message message);
+        void Update(MessageBoxParticipant participant);
     }
 }

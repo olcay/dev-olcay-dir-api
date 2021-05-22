@@ -21,13 +21,15 @@ namespace WebApi.Persistence
             IPetRepository petRepository,
             IRaceRepository races,
             IImageRepository images,
-            IAccountRepository accounts)
+            IAccountRepository accounts,
+            IMessageRepository messages)
         {
             _context = context;
             Pets = petRepository;
             Races = races;
             Images = images;
             Accounts = accounts;
+            Messages = messages;
         }
 
         public bool Complete()

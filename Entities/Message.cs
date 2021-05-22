@@ -43,5 +43,10 @@ namespace WebApi.Entities
 
             messageBox.HasNewMessage();
         }
+
+        internal void Delete()
+        {
+            IsDeleted = true;
+        }
     }
 }

@@ -25,8 +25,6 @@ namespace WebApi.Entities
 
         public int CreatedById { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         public ICollection<MessageBoxParticipant> MessageBoxParticipants { get; set; }
 
         protected MessageBox()

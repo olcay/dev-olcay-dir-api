@@ -33,7 +33,7 @@ namespace WebApi.Controllers
 
         // POST /api/pets/{petId}/messageBoxes
         [HttpPost("pets/{petId}/messageBoxes", Name = "GenerateMessageBox")]
-        public ActionResult<MessageBoxDto> GenerateMessageBox(Guid petId, MessageForCreationDto messageDto)
+        public ActionResult<MessageBoxDto> GenerateMessageBox(Guid petId)
         {
             var messageBox = _unitOfWork.Messages.GetBox(petId, Account.Id);
 
@@ -118,7 +118,7 @@ namespace WebApi.Controllers
             return Ok(count);
         }
 
-        [HttpDelete("pets/{petId}/messages/{messageId}", Name = "DeleteMessage")]
+        [HttpDelete("pets/{petId}/messageBoxes/{messageBoxId}/messages/{messageId}", Name = "DeleteMessage")]
         public IActionResult DeleteMessage(Guid petId, Guid messageId)
         {
             var message = _unitOfWork.Messages.Get(messageId);
@@ -126,7 +126,24 @@ namespace WebApi.Controllers
             if (message.CreatedById != Account.Id && Account.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            _unitOfWork.Messages.Delete(message);
+            message.Delete();
+            _unitOfWork.Messages.Update(message);
+
+            return NoContent();
+        }
+
+        [HttpDelete("pets/{petId}/messageBoxes/{messageBoxId}", Name = "DeleteMessageBox")]
+        public IActionResult DeleteMessageBox(Guid petId, Guid messageBoxId)
+        {
+            var messageBox = _unitOfWork.Messages.GetBox(messageBoxId);
+
+            if (messageBox.CreatedById != Account.Id && Account.Role != Role.Admin)
+                return Unauthorized(new { message = "Unauthorized" });
+
+            var participant = _unitOfWork.Messages.GetBoxParticipant(messageBoxId, Account.Id);
+
+            participant.Delete();
+            _unitOfWork.Messages.Update(participant);
 
             return NoContent();
         }

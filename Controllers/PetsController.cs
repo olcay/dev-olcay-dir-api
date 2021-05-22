@@ -75,7 +75,7 @@ namespace WebApi.Controllers
         {
             var pet = _unitOfWork.Pets.Get(petId);
 
-            if (pet.PetStatus != PetStatus.Published && (pet.CreatedById != Account.Id || Account.Role != Role.Admin))
+            if (pet.PetStatus != PetStatus.Published && !(pet.CreatedById == Account.Id || Account.Role == Role.Admin))
                 return Unauthorized(new { message = "Unauthorized" });
 
             var petDto = _mapper.Map<PetFullDto>(pet);

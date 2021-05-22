@@ -6,6 +6,9 @@ namespace WebApi.Profiles
     {
         public MessagesProfile()
         {
+            CreateMap<Entities.MessageBox, Models.MessageBoxDto>()
+            .ForMember(destination => destination.PetTitle,
+               opts => opts.MapFrom(source => source.Pet.Title));
             CreateMap<Entities.MessageBoxParticipant, Models.MessageBoxDto>()
             .ForMember(destination => destination.Id,
                opts => opts.MapFrom(source => source.MessageBox.Id))
@@ -14,7 +17,7 @@ namespace WebApi.Profiles
             .ForMember(destination => destination.PetTitle,
                opts => opts.MapFrom(source => source.MessageBox.Pet.Title))
             .ForMember(destination => destination.IsRead,
-               opts => opts.MapFrom(source => source.Read < source.MessageBox.Updated));
+               opts => opts.MapFrom(source => source.Read > source.MessageBox.Updated));
             CreateMap<Entities.Message, Models.MessageDto>();
         }
     }

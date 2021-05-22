@@ -18,5 +18,12 @@ namespace WebApi.Entities
         public MessageBox MessageBox { get; set; }
 
         public Guid MessageBoxId { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        internal void Delete()
+        {
+            IsDeleted = true;
+        }
     }
 }
