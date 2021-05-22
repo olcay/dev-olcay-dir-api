@@ -15,6 +15,7 @@ namespace WebApi.Persistence
         public DbSet<Image> Images { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<MessageBox> MessageBoxes { get; set; }
+        public DbSet<MessageBoxParticipant> MessageBoxParticipants { get; set; }
 
         private readonly IConfiguration Configuration;
 
@@ -336,6 +337,7 @@ namespace WebApi.Persistence
             };
 
             modelBuilder.Entity<Race>().HasData(allRaces);
+            modelBuilder.Entity<MessageBoxParticipant>().HasKey(ab => new { ab.AccountId, ab.MessageBoxId });
 
             base.OnModelCreating(modelBuilder);
         }

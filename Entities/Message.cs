@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WebApi.Helpers;
 
 namespace WebApi.Entities
 {
@@ -14,7 +15,7 @@ namespace WebApi.Entities
         public MessageBox MessageBox { get; set; }
 
         public Guid MessageBoxId { get; set; }
-        
+
         [Required]
         public DateTimeOffset Created { get; set; }
 
@@ -27,8 +28,20 @@ namespace WebApi.Entities
         [Required]
         public string Body { get; set; }
 
-        public DateTimeOffset? Read { get; set; }
-
         public bool IsDeleted { get; set; }
+
+        protected Message()
+        { }
+
+        public Message(string body, int accountId, MessageBox messageBox)
+        {
+            Body = body ?? throw new AppException(nameof(body));            
+            MessageBox = messageBox ?? throw new AppException(nameof(messageBox));
+            CreatedById = accountId;
+            Id = Guid.NewGuid();
+            Created = DateTimeOffset.UtcNow;
+
+            messageBox.HasNewMessage();
+        }
     }
 }
