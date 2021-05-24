@@ -155,8 +155,6 @@ namespace WebApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwaggerDocumentation();
-
             }
             else
             {
@@ -169,6 +167,8 @@ namespace WebApi
                     });
                 });
             }
+            
+            app.UseSwaggerDocumentation();
 
             // app.UseResponseCaching();
 
